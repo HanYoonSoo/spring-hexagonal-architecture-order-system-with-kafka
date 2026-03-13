@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: postgres-17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: order_system_db
+    ports:
+      - "13500:5432"
+    volumes:
+      - ./docker/order-system-postgres:/var/lib/postgresql/data
+    networks:
+      - home_network
+
+  valkey:
+    image: bitnami/valkey:latest
+    restart: always
+    ports:
+      - '13501:6379'
+    environment:
+      - VALKEY_PASSWORD=password
+    volumes:
+      - ./docker/order-system-valkey:/bitnami/valkey/data
+    networks:
+      - home_network
+
+networks:
+  home_network:

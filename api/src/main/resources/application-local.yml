@@ -1,0 +1,23 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+  docker:
+    compose:
+      file: spring-boot-docker-compose.yml
+      lifecycle-management: start_only
+  datasource:
+    url: jdbc:postgresql://localhost:13500/order_system_db?reWriteBatchedInserts=true
+    username: postgres
+    password: password
+
+redis:
+  host: localhost
+  port: 13501
+  password: password
+  database: 0

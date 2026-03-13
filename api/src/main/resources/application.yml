@@ -1,1 +1,14 @@
-spring.application.name=api
+spring:
+  jpa:
+    properties:
+      hibernate:
+        query.in_clause_parameter_padding: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    baseline-on-migrate: true
+    out-of-order: true
+  profiles:
+    default: local
+    active: local
