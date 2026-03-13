@@ -1,4 +1,4 @@
-package com.hanyoonsoo.ordersystem.adapter.out.cache.redis.config;
+package com.hanyoonsoo.ordersystem.adapter.out.redis.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

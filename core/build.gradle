@@ -2,6 +2,8 @@ dependencies {
     implementation project(':common')
 
     compileOnly 'jakarta.persistence:jakarta.persistence-api'   // @Entity, @Id 등
+    compileOnly 'org.springframework.data:spring-data-commons'   // @CreatedDate, @LastModifiedDate
+    compileOnly 'org.springframework.data:spring-data-jpa'       // AuditingEntityListener
 }
 
 tasks.named('bootJar') {
