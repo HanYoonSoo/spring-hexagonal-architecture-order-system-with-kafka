@@ -1,1 +1,7 @@
-rootProject.name = 'order-system'
+rootProject.name = 'order-system-backend'
+
+include(":api")
+include(":application")
+include(":core")
+include(":adapter")
+include(":common")

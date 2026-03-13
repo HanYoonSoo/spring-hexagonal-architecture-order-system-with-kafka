@@ -1,0 +1,16 @@
+dependencies {
+	implementation project(':core')
+	implementation project(':common')
+	implementation project(':adapter')
+	implementation project(':application')
+
+//	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+}
+
+tasks.named('bootJar') {
+	enabled = false
+}

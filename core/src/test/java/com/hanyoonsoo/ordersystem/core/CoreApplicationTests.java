@@ -1,10 +1,10 @@
-package com.hanyoonsoo.ordersystem;
+package com.hanyoonsoo.ordersystem.core;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OrderSystemApplicationTests {
+class CoreApplicationTests {
 
     @Test
     void contextLoads() {

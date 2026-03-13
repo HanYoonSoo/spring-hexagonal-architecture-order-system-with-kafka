@@ -1,37 +1,55 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.11'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version '3.5.11' apply false
+    id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
-group = 'com.hanyoonsoo'
-version = '0.0.1-SNAPSHOT'
-description = 'order-system'
+subprojects {
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+    group = 'com.hanyoonsoo'
+    version = '0.0.1-SNAPSHOT'
+    description = 'order-system'
+
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
     }
-}
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
     }
-}
 
-repositories {
-    mavenCentral()
-}
+    repositories {
+        mavenCentral()
+    }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
 
-tasks.named('test') {
-    useJUnitPlatform()
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform {
+            excludeTags 'integration'
+        }
+    }
+
+    tasks.register('integrationTest', Test) {
+        useJUnitPlatform {
+            includeTags "integration"
+        }
+    }
+
 }
