@@ -1,6 +1,8 @@
 package com.hanyoonsoo.ordersystem.api.auth.utils;
 
-import com.hanyoonsoo.ordersystem.api.auth.jwt.JwtUserClaims;
+import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
+import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
+import com.hanyoonsoo.ordersystem.common.exception.base.UnauthorizedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
@@ -26,7 +28,7 @@ public final class SecurityUtils {
 
     public static UUID requiredAuthenticatedUserId() {
         return findAuthenticatedUserId()
-                .orElseThrow(() -> new IllegalStateException("No authenticated user in security context"));
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.AUTHENTICATION_FAILED));
     }
 
     public static void clear() {

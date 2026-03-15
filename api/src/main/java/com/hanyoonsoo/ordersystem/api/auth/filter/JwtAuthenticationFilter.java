@@ -3,8 +3,11 @@ package com.hanyoonsoo.ordersystem.api.auth.filter;
 import com.hanyoonsoo.ordersystem.api.auth.exception.JwtAuthenticationException;
 import com.hanyoonsoo.ordersystem.api.auth.config.AllowedPaths;
 import com.hanyoonsoo.ordersystem.api.auth.custom.CustomAuthenticationEntryPoint;
-import com.hanyoonsoo.ordersystem.api.auth.jwt.JwtProvider;
-import com.hanyoonsoo.ordersystem.api.auth.jwt.JwtUserClaims;
+import com.hanyoonsoo.ordersystem.adapter.out.security.jwt.JwtProvider;
+import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
+import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthRedisServicePort;
+import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
+import com.hanyoonsoo.ordersystem.common.exception.base.UnauthorizedException;
 import com.hanyoonsoo.ordersystem.core.domain.user.entity.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
+    private final AuthRedisServicePort authRedisService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Override
@@ -60,7 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authorization.substring(BEARER_PREFIX.length());
 
         try {
-            // if (authRedisService.isLogoutAccessToken(token)) { throw new IllegalArgumentException("Logged out token"); }
+            if (authRedisService.isLogoutAccessToken(token)) {
+                throw new JwtAuthenticationException(ErrorCode.LOGGED_OUT_ACCESS_TOKEN);
+            }
             JwtUserClaims claims = jwtProvider.validateAndExtractUserClaimsFromAccessToken(token);
 
             var authorities = claims.roles().stream()
@@ -73,6 +79,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (JwtAuthenticationException e) {
             SecurityContextHolder.clearContext();
             customAuthenticationEntryPoint.commence(request, response, e);
+            return;
+        } catch (UnauthorizedException e) {
+            SecurityContextHolder.clearContext();
+            customAuthenticationEntryPoint.commence(
+                    request,
+                    response,
+                    new JwtAuthenticationException(e.getErrorCode(), e.getMessage(), e)
+            );
             return;
         } catch (RuntimeException e) {
             SecurityContextHolder.clearContext();

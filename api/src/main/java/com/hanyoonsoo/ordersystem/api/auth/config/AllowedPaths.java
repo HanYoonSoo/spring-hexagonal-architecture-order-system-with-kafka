@@ -3,7 +3,9 @@ package com.hanyoonsoo.ordersystem.api.auth.config;
 import java.util.Arrays;
 
 public enum AllowedPaths {
-    AUTH("/api/v1/auth/**"),
+    SIGN_IN("/api/v1/auth/sign-in"),
+    TOKEN_REISSUE("/api/v1/auth/reissue"),
+    USER_SIGN_UP("/api/v1/users"),
     HEALTH("/actuator/health"),
     ERROR("/error"),
     FAVICON("/favicon.ico"),
