@@ -25,33 +25,24 @@ import java.util.UUID;
 public class User extends SoftDeleteTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "recovery_email")
-    private String recoveryEmail;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private final List<UserRole> userRoles = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private final List<UserCredential> userCredentials = new ArrayList<>();
 
-    private User(String name, String recoveryEmail) {
+    private User(String name) {
         this.name = name;
-        this.recoveryEmail = recoveryEmail;
     }
 
-    public static User of(String name, String recoveryEmail) {
-        return new User(name, recoveryEmail);
-    }
-
-    public void modifyRecoveryEmail(String recoveryEmail) {
-        this.recoveryEmail = recoveryEmail;
+    public static User from(String name) {
+        return new User(name);
     }
 
     public void addUserRole(UserRole userRole) {
