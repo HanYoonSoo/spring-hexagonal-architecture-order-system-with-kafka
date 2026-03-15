@@ -1,4 +1,4 @@
-package com.hanyoonsoo.ordersystem.api.auth.config;
+package com.hanyoonsoo.ordersystem.adapter.out.security.config;
 
 import lombok.Getter;
 import lombok.Setter;

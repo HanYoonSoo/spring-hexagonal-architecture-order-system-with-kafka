@@ -1,4 +1,4 @@
-package com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.repository.user;
+package com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.user.repository;
 
 import com.hanyoonsoo.ordersystem.core.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

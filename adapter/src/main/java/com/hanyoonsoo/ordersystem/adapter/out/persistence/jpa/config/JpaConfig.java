@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaAuditing
 @EntityScan(basePackages = "com.hanyoonsoo.ordersystem.core.domain")
-@EnableJpaRepositories(basePackages = "com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.repository")
+@EnableJpaRepositories(basePackages = "com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa")
 public class JpaConfig {
 }
