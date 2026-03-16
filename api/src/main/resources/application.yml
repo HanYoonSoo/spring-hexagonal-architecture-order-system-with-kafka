@@ -20,10 +20,48 @@ spring:
       access-token-expiration-seconds: 3600
       refresh-token-expiration-seconds: 1209600
       secret: ${ORDER_SYSTEM_JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+  kafka:
+    producer:
+      acks: all
+      retries: 10
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+    listener:
+      ack-mode: manual_immediate
 
 cors:
   allowed:
     origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
+kafka:
+  consumer:
+    error-handler:
+      retry-attempts: ${KAFKA_CONSUMER_RETRY_ATTEMPTS:3}
+      retry-backoff-millis: ${KAFKA_CONSUMER_RETRY_BACKOFF_MILLIS:1000}
+      dlt-suffix: ${KAFKA_DLT_SUFFIX:.dlt}
+      dlt-partition: ${KAFKA_DLT_PARTITION:0}
+  order-created:
+    topic: ${KAFKA_TOPIC_ORDER_CREATED:order.created.v1}
+    group-id: ${KAFKA_GROUP_ID_ORDER_CREATED:order-created-consumer-v1}
+    concurrency: ${KAFKA_CONCURRENCY_ORDER_CREATED:1}
+
+outbox:
+  relay:
+    enabled: ${OUTBOX_RELAY_ENABLED:true}
+    batch-size: ${OUTBOX_RELAY_BATCH_SIZE:50}
+    fixed-delay-millis: ${OUTBOX_RELAY_FIXED_DELAY_MILLIS:500}
+    retry-backoff-millis: ${OUTBOX_RELAY_RETRY_BACKOFF_MILLIS:5000}
+    max-retry-count: ${OUTBOX_RELAY_MAX_RETRY_COUNT:5}
+
+redis:
+  cache:
+    default-ttl-seconds: ${REDIS_CACHE_DEFAULT_TTL_SECONDS:3600}
+    ttl-seconds:
+      stock: ${REDIS_CACHE_STOCK_TTL_SECONDS:3600}
 
 server:
   host-url: ${SERVER_HOST_URL:http://localhost:8080}

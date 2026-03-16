@@ -15,12 +15,26 @@ spring:
     url: jdbc:postgresql://localhost:13500/order_system_db?reWriteBatchedInserts=true
     username: postgres
     password: password
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
 redis:
   host: localhost
   port: 13501
   password: password
   database: 0
+  cache:
+    default-ttl-seconds: ${REDIS_CACHE_DEFAULT_TTL_SECONDS:3600}
+    ttl-seconds:
+      stock: ${REDIS_CACHE_STOCK_TTL_SECONDS:3600}
 
 cookie:
   same-site: Lax
