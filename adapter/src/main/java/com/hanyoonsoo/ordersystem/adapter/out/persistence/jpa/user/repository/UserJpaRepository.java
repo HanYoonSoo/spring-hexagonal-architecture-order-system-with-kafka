@@ -8,7 +8,5 @@ import java.util.UUID;
 
 public interface UserJpaRepository extends JpaRepository<User, UUID> {
 
-    Optional<User> findByIdAndDeletedAtIsNull(UUID id);
-
-    boolean existsByIdAndDeletedAtIsNull(UUID id);
+    Optional<User> findUserByIdAndDeletedAtIsNull(UUID id);
 }

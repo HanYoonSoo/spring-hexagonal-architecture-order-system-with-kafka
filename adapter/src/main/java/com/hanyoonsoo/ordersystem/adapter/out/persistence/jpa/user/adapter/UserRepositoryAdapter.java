@@ -41,22 +41,22 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public boolean existsByLoginId(String loginId) {
-        return userCredentialJpaRepository.existsByLoginIdAndDeletedAtIsNull(loginId);
+        return userCredentialJpaRepository.existsUserCredentialByLoginIdAndDeletedAtIsNull(loginId);
     }
 
     @Override
     public Optional<User> findById(UUID userId) {
-        return userJpaRepository.findByIdAndDeletedAtIsNull(userId);
+        return userJpaRepository.findUserByIdAndDeletedAtIsNull(userId);
     }
 
     @Override
     public Optional<UserCredential> findUserCredentialByLoginIdAndProvider(String loginId, CredentialProvider credentialProvider) {
-        return userCredentialJpaRepository.findByLoginIdAndProviderAndDeletedAtIsNull(loginId, credentialProvider);
+        return userCredentialJpaRepository.findUserCredentialByLoginIdAndProviderAndDeletedAtIsNull(loginId, credentialProvider);
     }
 
     @Override
     public List<Role> findRolesByUserId(UUID userId) {
-        return userRoleJpaRepository.findByUserId(userId).stream()
+        return userRoleJpaRepository.findUserRolesByUserId(userId).stream()
                 .map(UserRole::getRole)
                 .toList();
     }

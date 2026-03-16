@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface UserCredentialJpaRepository extends JpaRepository<UserCredential, Long> {
 
-    boolean existsByLoginIdAndDeletedAtIsNull(String loginId);
+    boolean existsUserCredentialByLoginIdAndDeletedAtIsNull(String loginId);
 
-    Optional<UserCredential> findByLoginIdAndProviderAndDeletedAtIsNull(String loginId, CredentialProvider provider);
+    Optional<UserCredential> findUserCredentialByLoginIdAndProviderAndDeletedAtIsNull(String loginId, CredentialProvider provider);
 }
