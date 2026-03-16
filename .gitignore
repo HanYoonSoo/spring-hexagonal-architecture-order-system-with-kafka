@@ -40,3 +40,4 @@ out/
 ### Docker Data ###
 docker/order-system-valkey/**
 docker/order-system-postgres/**
+docker/order-system-kafka/**
