@@ -1,4 +1,4 @@
-package com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.config;
+package com.hanyoonsoo.ordersystem.adapter.config.jpa;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Configuration;

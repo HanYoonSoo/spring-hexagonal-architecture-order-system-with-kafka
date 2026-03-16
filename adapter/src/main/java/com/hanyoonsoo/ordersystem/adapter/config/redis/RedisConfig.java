@@ -1,4 +1,4 @@
-package com.hanyoonsoo.ordersystem.adapter.out.redis.config;
+package com.hanyoonsoo.ordersystem.adapter.config.redis;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +8,10 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 
 @Configuration
 public class RedisConfig {
@@ -43,5 +47,19 @@ public class RedisConfig {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
         return redisTemplate;
+    }
+
+    @Bean(destroyMethod = "shutdown")
+    public RedissonClient redissonClient() {
+        Config config = new Config();
+        SingleServerConfig singleServerConfig = config.useSingleServer()
+                .setAddress("redis://" + host + ":" + port)
+                .setDatabase(database);
+
+        if (password != null && !password.isBlank()) {
+            singleServerConfig.setPassword(password);
+        }
+
+        return Redisson.create(config);
     }
 }
