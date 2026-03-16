@@ -22,6 +22,11 @@ public class JwtTokenProviderAdapter implements JwtTokenPort {
     }
 
     @Override
+    public JwtUserClaims validateAndExtractUserClaimsFromAccessToken(String token) {
+        return jwtProvider.validateAndExtractUserClaimsFromAccessToken(token);
+    }
+
+    @Override
     public JwtUserClaims validateAndExtractUserClaimsFromRefreshToken(String token) {
         return jwtProvider.validateAndExtractUserClaimsFromRefreshToken(token);
     }

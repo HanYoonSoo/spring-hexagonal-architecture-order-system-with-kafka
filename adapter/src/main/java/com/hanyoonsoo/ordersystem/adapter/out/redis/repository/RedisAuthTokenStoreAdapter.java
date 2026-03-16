@@ -1,6 +1,6 @@
 package com.hanyoonsoo.ordersystem.adapter.out.redis.repository;
 
-import com.hanyoonsoo.ordersystem.application.auth.port.out.AuthRedisRepository;
+import com.hanyoonsoo.ordersystem.application.auth.port.out.AuthTokenStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,7 +9,7 @@ import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor
-public class AuthRedisRepositoryAdapter implements AuthRedisRepository {
+public class RedisAuthTokenStoreAdapter implements AuthTokenStore {
 
     private static final String LOGOUT_VALUE = "logout";
 

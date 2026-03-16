@@ -1,6 +1,6 @@
 package com.hanyoonsoo.ordersystem.application.auth.port.in;
 
-public interface AuthRedisServicePort {
+public interface AuthTokenServicePort {
 
     void saveRefreshToken(String userId, String refreshToken, long expireMillis);
 

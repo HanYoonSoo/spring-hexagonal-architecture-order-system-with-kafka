@@ -3,7 +3,7 @@ package com.hanyoonsoo.ordersystem.application.auth.service;
 import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
 import com.hanyoonsoo.ordersystem.application.auth.dto.SignInCommand;
 import com.hanyoonsoo.ordersystem.application.auth.dto.TokenDto;
-import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthRedisServicePort;
+import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthTokenServicePort;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthServicePort;
 import com.hanyoonsoo.ordersystem.application.auth.port.out.JwtTokenPort;
 import com.hanyoonsoo.ordersystem.application.common.transaction.ReadOnlyTransactional;
@@ -28,7 +28,7 @@ public class AuthService implements AuthServicePort {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenPort jwtTokenPort;
-    private final AuthRedisServicePort authRedisService;
+    private final AuthTokenServicePort authTokenService;
 
     @Override
     @ReadOnlyTransactional
@@ -50,12 +50,18 @@ public class AuthService implements AuthServicePort {
 
         List<Role> userRoles = userRepository.findRolesByUserId(userCredential.getUser().getId());
         TokenDto tokenDto = jwtTokenPort.createTokens(userCredential.getUser().getId(), userRoles);
-        authRedisService.saveRefreshToken(
+        authTokenService.saveRefreshToken(
                 userCredential.getUser().getId().toString(),
                 tokenDto.refreshToken(),
                 tokenDto.refreshTokenExpiration().toMillis()
         );
         return tokenDto;
+    }
+
+    @Override
+    @ReadOnlyTransactional
+    public JwtUserClaims validateAndExtractUserClaimsFromAccessToken(String accessToken) {
+        return jwtTokenPort.validateAndExtractUserClaimsFromAccessToken(accessToken);
     }
 
     @Override
@@ -68,7 +74,7 @@ public class AuthService implements AuthServicePort {
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN);
         }
 
-        authRedisService.matchRefreshTokenOrThrow(refreshClaims.id().toString(), refreshToken);
+        authTokenService.matchRefreshTokenOrThrow(refreshClaims.id().toString(), refreshToken);
 
         List<Role> currentRoles = userRepository.findRolesByUserId(refreshClaims.id());
         if (!Set.copyOf(currentRoles).equals(Set.copyOf(refreshClaims.roles()))) {
@@ -76,7 +82,7 @@ public class AuthService implements AuthServicePort {
         }
 
         TokenDto reissued = jwtTokenPort.createTokens(refreshClaims.id(), currentRoles);
-        authRedisService.saveRefreshToken(
+        authTokenService.saveRefreshToken(
                 refreshClaims.id().toString(),
                 reissued.refreshToken(),
                 reissued.refreshTokenExpiration().toMillis()
@@ -87,7 +93,7 @@ public class AuthService implements AuthServicePort {
     @Override
     @Transactional
     public void logout(String userId, String accessToken) {
-        authRedisService.deleteRefreshToken(userId);
-        authRedisService.saveAccessTokenForLogout(accessToken, jwtTokenPort.getAccessTokenExpirationMillis());
+        authTokenService.deleteRefreshToken(userId);
+        authTokenService.saveAccessTokenForLogout(accessToken, jwtTokenPort.getAccessTokenExpirationMillis());
     }
 }

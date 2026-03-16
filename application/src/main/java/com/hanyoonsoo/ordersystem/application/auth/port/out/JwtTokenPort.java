@@ -11,6 +11,8 @@ public interface JwtTokenPort {
 
     TokenDto createTokens(UUID userId, List<Role> roles);
 
+    JwtUserClaims validateAndExtractUserClaimsFromAccessToken(String token);
+
     JwtUserClaims validateAndExtractUserClaimsFromRefreshToken(String token);
 
     JwtUserClaims extractUserClaimsFromAccessTokenAllowExpired(String token);

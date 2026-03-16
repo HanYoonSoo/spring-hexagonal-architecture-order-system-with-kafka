@@ -3,9 +3,9 @@ package com.hanyoonsoo.ordersystem.api.auth.filter;
 import com.hanyoonsoo.ordersystem.api.auth.exception.JwtAuthenticationException;
 import com.hanyoonsoo.ordersystem.api.auth.config.AllowedPaths;
 import com.hanyoonsoo.ordersystem.api.auth.custom.CustomAuthenticationEntryPoint;
-import com.hanyoonsoo.ordersystem.adapter.out.security.jwt.JwtProvider;
 import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
-import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthRedisServicePort;
+import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthTokenServicePort;
+import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthServicePort;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
 import com.hanyoonsoo.ordersystem.common.exception.base.UnauthorizedException;
 import com.hanyoonsoo.ordersystem.core.domain.user.entity.Role;
@@ -33,8 +33,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final JwtProvider jwtProvider;
-    private final AuthRedisServicePort authRedisService;
+    private final AuthServicePort authService;
+    private final AuthTokenServicePort authTokenService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Override
@@ -64,10 +64,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = authorization.substring(BEARER_PREFIX.length());
 
         try {
-            if (authRedisService.isLogoutAccessToken(token)) {
+            if (authTokenService.isLogoutAccessToken(token)) {
                 throw new JwtAuthenticationException(ErrorCode.LOGGED_OUT_ACCESS_TOKEN);
             }
-            JwtUserClaims claims = jwtProvider.validateAndExtractUserClaimsFromAccessToken(token);
+            JwtUserClaims claims = authService.validateAndExtractUserClaimsFromAccessToken(token);
 
             var authorities = claims.roles().stream()
                     .map(Role::toSpringRole)

@@ -55,10 +55,6 @@ public class JwtProvider {
         return new TokenDto(accessToken, refreshToken, Duration.ofSeconds(refreshTokenExpirationSeconds));
     }
 
-    public String createAccessToken(UUID userId, List<Role> roles) {
-        return createToken(userId, roles, jwtSecurityProperties.getAccessTokenExpirationSeconds());
-    }
-
     public JwtUserClaims validateAndExtractUserClaimsFromAccessToken(String token) {
         return validateAndExtractUserClaims(token);
     }
@@ -73,10 +69,6 @@ public class JwtProvider {
 
     public long getAccessTokenExpirationMillis() {
         return jwtSecurityProperties.getAccessTokenExpirationSeconds() * 1000;
-    }
-
-    public long getRefreshTokenExpirationMillis() {
-        return jwtSecurityProperties.getRefreshTokenExpirationSeconds() * 1000;
     }
 
     private JwtUserClaims validateAndExtractUserClaims(String token) {
