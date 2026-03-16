@@ -19,6 +19,10 @@ public enum ErrorCode {
     UNAUTHORIZED_ORIGIN(401, "A014", "허용되지 않은 출처입니다."),
     LOGGED_OUT_ACCESS_TOKEN(401, "A015", "로그아웃된 액세스 토큰입니다."),
     USER_NOT_FOUND(404, "A016", "사용자를 찾을 수 없습니다."),
+    PRODUCT_NOT_FOUND(404, "A017", "상품을 찾을 수 없습니다."),
+    ORDER_NOT_FOUND(404, "A018", "주문을 찾을 수 없습니다."),
+    OUT_OF_STOCK(409, "A019", "재고가 부족합니다."),
+    LOCK_ACQUISITION_FAILED(409, "A020", "잠금 획득에 실패했습니다."),
     FORBIDDEN_USER(403, "A013", "권한이 없는 유저입니다."),
     INTERNAL_SERVER_ERROR(500, "A021", "서버 내부 에러입니다.");
 
