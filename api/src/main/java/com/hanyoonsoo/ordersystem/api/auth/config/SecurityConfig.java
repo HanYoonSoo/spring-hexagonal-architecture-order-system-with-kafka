@@ -49,6 +49,8 @@ public class SecurityConfig {
                         .requestMatchers(AllowedPaths.allowedPaths()).permitAll()
                         .requestMatchers("/api/v1/auth/**").hasRole(Role.USER.name())
                         .requestMatchers("/api/v1/users/**").hasRole(Role.USER.name())
+                        .requestMatchers("/api/v1/orders/**").hasRole(Role.USER.name())
+                        .requestMatchers("/api/v1/products/**").hasRole(Role.USER.name())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
