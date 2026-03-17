@@ -11,21 +11,4 @@ public record OrderCreatedEvent(
         UUID userId,
         Long productId,
         Long quantity
-) {
-    public static OrderCreatedEvent of(
-            UUID orderId,
-            UUID userId,
-            Long productId,
-            Long quantity
-    ) {
-        return new OrderCreatedEvent(
-                UUID.randomUUID(),
-                "order.created",
-                OffsetDateTime.now(),
-                orderId,
-                userId,
-                productId,
-                quantity
-        );
-    }
-}
+) {}

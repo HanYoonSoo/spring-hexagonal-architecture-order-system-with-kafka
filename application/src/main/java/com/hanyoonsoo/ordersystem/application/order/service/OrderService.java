@@ -2,6 +2,7 @@ package com.hanyoonsoo.ordersystem.application.order.service;
 
 import com.hanyoonsoo.ordersystem.application.order.dto.OrderRequestCommand;
 import com.hanyoonsoo.ordersystem.application.order.event.OrderCreatedEvent;
+import com.hanyoonsoo.ordersystem.application.order.event.OrderEventType;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
 import com.hanyoonsoo.ordersystem.application.order.port.out.OrderRepository;
 import com.hanyoonsoo.ordersystem.application.order.port.out.StockReservationRepository;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -43,7 +45,10 @@ public class OrderService implements OrderServicePort {
         Order order = Order.pending(command.userId(), command.productId(), command.quantity());
         orderRepository.save(order);
 
-        OrderCreatedEvent event = OrderCreatedEvent.of(
+        OrderCreatedEvent event = new OrderCreatedEvent(
+                UUID.randomUUID(),
+                OrderEventType.ORDER_CREATED.value(),
+                OffsetDateTime.now(),
                 order.getId(),
                 command.userId(),
                 command.productId(),
@@ -79,7 +84,6 @@ public class OrderService implements OrderServicePort {
 
     @Override
     @Transactional
-    @DistributedLock(key = "'order:id:' + #orderId")
     public void handleOrderCreatedDltEvent(UUID orderId) {
         orderRepository.findById(orderId).ifPresent(order -> {
             if (!order.isPending()) {

@@ -5,6 +5,7 @@ import com.hanyoonsoo.ordersystem.api.order.dto.request.OrderRequest;
 import com.hanyoonsoo.ordersystem.api.order.dto.response.OrderRequestResponse;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
 import com.hanyoonsoo.ordersystem.common.response.ApiResponse;
+import com.hanyoonsoo.ordersystem.core.domain.order.entity.OrderStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,6 @@ public class OrderController {
     @PostMapping
     public ApiResponse<OrderRequestResponse> requestOrder(@Valid @RequestBody OrderRequest request) {
         UUID orderId = orderService.requestOrder(request.toCommand(SecurityUtils.requiredAuthenticatedUserId()));
-        return ApiResponse.success(OrderRequestResponse.pending(orderId));
+        return ApiResponse.success(OrderRequestResponse.from(orderId, OrderStatus.PENDING));
     }
 }
