@@ -1,14 +1,13 @@
 package com.hanyoonsoo.ordersystem.api.product.controller;
 
+import com.hanyoonsoo.ordersystem.api.product.dto.request.ProductCreateRequest;
 import com.hanyoonsoo.ordersystem.api.product.dto.response.ProductInfoResponse;
 import com.hanyoonsoo.ordersystem.application.product.port.in.ProductServicePort;
 import com.hanyoonsoo.ordersystem.common.response.ApiResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -23,5 +22,13 @@ public class ProductController {
     ) {
         ProductInfoResponse response = ProductInfoResponse.from(productService.getProductInfo(productId));
         return ApiResponse.success(response);
+    }
+
+    @PostMapping("")
+    public ApiResponse<Void> createProduct(
+            @Valid @RequestBody ProductCreateRequest request
+    ) {
+        productService.createProduct(request.toCommand());
+        return ApiResponse.success(null);
     }
 }

@@ -9,4 +9,6 @@ public interface ProductRepository {
     boolean existsById(Long productId);
 
     Optional<Product> findProductById(Long productId);
+
+    void save(Product entity);
 }

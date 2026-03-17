@@ -1,6 +1,7 @@
 package com.hanyoonsoo.ordersystem.application.product.service;
 
 import com.hanyoonsoo.ordersystem.application.common.transaction.ReadOnlyTransactional;
+import com.hanyoonsoo.ordersystem.application.product.dto.ProductCreateCommand;
 import com.hanyoonsoo.ordersystem.application.product.dto.ProductInfoDto;
 import com.hanyoonsoo.ordersystem.application.product.port.in.ProductServicePort;
 import com.hanyoonsoo.ordersystem.application.product.port.out.ProductRepository;
@@ -29,5 +30,10 @@ public class ProductService implements ProductServicePort {
                 product.getPrice(),
                 product.getStock()
         );
+    }
+
+    @Override
+    public void createProduct(ProductCreateCommand command) {
+        productRepository.save(command.toEntity());
     }
 }

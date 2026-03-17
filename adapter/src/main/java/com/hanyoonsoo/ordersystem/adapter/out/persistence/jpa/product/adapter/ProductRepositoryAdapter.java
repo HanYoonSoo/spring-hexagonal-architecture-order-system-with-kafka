@@ -23,4 +23,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
     public Optional<Product> findProductById(Long productId) {
         return productJpaRepository.findProductById(productId);
     }
+
+    @Override
+    public void save(Product entity) { productJpaRepository.save(entity); }
 }
