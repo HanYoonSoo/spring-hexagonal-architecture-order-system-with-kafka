@@ -55,6 +55,10 @@ public class Order extends SoftDeleteTimeEntity {
         this.status = OrderStatus.REJECTED_OUT_OF_STOCK;
     }
 
+    public void fail() {
+        this.status = OrderStatus.FAILED;
+    }
+
     public boolean isPending() {
         return this.status == OrderStatus.PENDING;
     }

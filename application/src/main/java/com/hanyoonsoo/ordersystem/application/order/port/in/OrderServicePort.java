@@ -10,4 +10,6 @@ public interface OrderServicePort {
     UUID requestOrder(OrderRequestCommand command);
 
     void handleOrderCreatedEvent(OrderCreatedEvent event);
+
+    void handleOrderCreatedDltEvent(UUID orderId);
 }

@@ -77,6 +77,18 @@ public class OrderService implements OrderServicePort {
         order.rejectOutOfStock();
     }
 
+    @Override
+    @Transactional
+    @DistributedLock(key = "'order:id:' + #orderId")
+    public void handleOrderCreatedDltEvent(UUID orderId) {
+        orderRepository.findById(orderId).ifPresent(order -> {
+            if (!order.isPending()) {
+                return;
+            }
+            order.fail();
+        });
+    }
+
     private void validate(OrderRequestCommand command) {
         if (command.productId() == null || command.quantity() == null || command.quantity() <= 0L) {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST);
