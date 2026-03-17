@@ -32,6 +32,15 @@ public class OutboxRelayService {
             String payload,
             OffsetDateTime occurredAt
     ) {
+        log.info(
+                "Appending outbox event. topic={}, eventType={}, eventKey={}, payloadLength={}, payloadPreview={}",
+                topic,
+                eventType,
+                eventKey,
+                payload == null ? 0 : payload.length(),
+                preview(payload)
+        );
+
         OutboxEvent outboxEvent = OutboxEvent.pending(
                 eventType,
                 topic,
@@ -81,5 +90,16 @@ public class OutboxRelayService {
                 );
             }
         }
+    }
+
+    private String preview(String payload) {
+        if (payload == null) {
+            return "null";
+        }
+        int maxLength = 120;
+        if (payload.length() <= maxLength) {
+            return payload;
+        }
+        return payload.substring(0, maxLength) + "...";
     }
 }
