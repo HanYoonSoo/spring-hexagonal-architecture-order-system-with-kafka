@@ -8,10 +8,13 @@ import com.hanyoonsoo.ordersystem.common.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice(basePackages = "com.hanyoonsoo.ordersystem.api")
 public class GlobalExceptionHandler {
@@ -54,6 +57,33 @@ public class GlobalExceptionHandler {
     ) {
         String message = resolveValidationMessage(exception);
         return buildResponse(response, ErrorCode.INVALID_REQUEST, message, request.getRequestURI());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ApiResponse<Void> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException exception,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        return buildResponse(response, ErrorCode.INVALID_REQUEST, "요청 본문 형식이 올바르지 않습니다.", request.getRequestURI());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ApiResponse<Void> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException exception,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        return buildResponse(response, ErrorCode.INVALID_REQUEST, "지원하지 않는 HTTP 메서드입니다.", request.getRequestURI());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ApiResponse<Void> handleNoResourceFoundException(
+            NoResourceFoundException exception,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        return buildResponse(response, ErrorCode.INVALID_REQUEST, "요청 경로를 찾을 수 없습니다.", request.getRequestURI());
     }
 
     @ExceptionHandler(Exception.class)
