@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,7 +34,6 @@ public class OutboxEvent extends BaseTimeEntity {
     @Column(name = "event_key", length = 255)
     private String eventKey;
 
-    @Lob
     @Column(name = "payload", nullable = false, columnDefinition = "text")
     private String payload;
 
