@@ -5,7 +5,6 @@ import com.hanyoonsoo.ordersystem.application.outbox.port.out.OutboxEventReposit
 import com.hanyoonsoo.ordersystem.core.domain.outbox.entity.OutboxEvent;
 import com.hanyoonsoo.ordersystem.core.domain.outbox.entity.OutboxStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -24,10 +23,10 @@ public class OutboxEventRepositoryAdapter implements OutboxEventRepository {
 
     @Override
     public List<OutboxEvent> findPendingPublishTargets(LocalDateTime now, int limit) {
-        return outboxEventJpaRepository.findOutboxEventsByStatusAndNextRetryAtLessThanEqualOrderByCreatedAtAsc(
-                OutboxStatus.PENDING,
+        return outboxEventJpaRepository.findPendingPublishTargetsWithSkipLocked(
+                OutboxStatus.PENDING.name(),
                 now,
-                PageRequest.of(0, limit)
+                limit
         );
     }
 }
