@@ -11,6 +11,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -25,6 +26,16 @@ public class KafkaConsumerFactoryConfig {
     public ConsumerFactory<String, OrderCreatedEvent> orderCreatedConsumerFactory(KafkaProperties kafkaProperties) {
         Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
         JsonDeserializer<OrderCreatedEvent> valueDeserializer = new JsonDeserializer<>(OrderCreatedEvent.class);
+        return new DefaultKafkaConsumerFactory<>(properties, new StringDeserializer(), valueDeserializer);
+    }
+
+    @Bean
+    @SuppressWarnings("unchecked")
+    public ConsumerFactory<String, Map<String, Object>> dltConsumerFactory(KafkaProperties kafkaProperties) {
+        Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
+        Class<Map<String, Object>> mapType = (Class<Map<String, Object>>) (Class<?>) Map.class;
+        JsonDeserializer<Map<String, Object>> valueDeserializer = new JsonDeserializer<>(mapType, false);
+        valueDeserializer.addTrustedPackages("*");
         return new DefaultKafkaConsumerFactory<>(properties, new StringDeserializer(), valueDeserializer);
     }
 
@@ -65,6 +76,18 @@ public class KafkaConsumerFactoryConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderCreatedConsumerFactory);
         factory.setCommonErrorHandler(kafkaDefaultErrorHandler);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return factory;
+    }
+
+    @Bean(name = "dltKafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, Map<String, Object>> dltKafkaListenerContainerFactory(
+            ConsumerFactory<String, Map<String, Object>> dltConsumerFactory
+    ) {
+        ConcurrentKafkaListenerContainerFactory<String, Map<String, Object>> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(dltConsumerFactory);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         return factory;
     }
 }
