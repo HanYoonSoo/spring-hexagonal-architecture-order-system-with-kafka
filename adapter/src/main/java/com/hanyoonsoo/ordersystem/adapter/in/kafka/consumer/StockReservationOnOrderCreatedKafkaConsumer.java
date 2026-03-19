@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class OrderCreatedKafkaConsumer {
+public class StockReservationOnOrderCreatedKafkaConsumer {
 
     private final OrderServicePort orderService;
 
@@ -23,7 +23,7 @@ public class OrderCreatedKafkaConsumer {
             concurrency = "${kafka.order-created.concurrency}",
             containerFactory = "orderCreatedKafkaListenerContainerFactory"
     )
-    public void consume(
+    public void handleStockReservationOnOrderCreated(
             OrderCreatedEvent event,
             Acknowledgment acknowledgment,
             @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,

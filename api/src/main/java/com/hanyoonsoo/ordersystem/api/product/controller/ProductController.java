@@ -1,7 +1,7 @@
 package com.hanyoonsoo.ordersystem.api.product.controller;
 
-import com.hanyoonsoo.ordersystem.api.product.dto.request.ProductCreateRequest;
-import com.hanyoonsoo.ordersystem.api.product.dto.response.ProductInfoResponse;
+import com.hanyoonsoo.ordersystem.api.product.dto.request.CreateProductRequest;
+import com.hanyoonsoo.ordersystem.api.product.dto.response.ProductDetailResponse;
 import com.hanyoonsoo.ordersystem.application.product.port.in.ProductServicePort;
 import com.hanyoonsoo.ordersystem.common.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -17,16 +17,16 @@ public class ProductController {
     private final ProductServicePort productService;
 
     @GetMapping("/{productId}")
-    public ApiResponse<ProductInfoResponse> getProductInfo(
+    public ApiResponse<ProductDetailResponse> getProductInfo(
             @PathVariable @Positive Long productId
     ) {
-        ProductInfoResponse response = ProductInfoResponse.from(productService.getProductInfo(productId));
+        ProductDetailResponse response = ProductDetailResponse.from(productService.getProductInfo(productId));
         return ApiResponse.success(response);
     }
 
     @PostMapping("")
     public ApiResponse<Void> createProduct(
-            @Valid @RequestBody ProductCreateRequest request
+            @Valid @RequestBody CreateProductRequest request
     ) {
         productService.createProduct(request.toCommand());
         return ApiResponse.success(null);

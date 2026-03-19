@@ -1,7 +1,7 @@
 package com.hanyoonsoo.ordersystem.application.user.service;
 
 import com.hanyoonsoo.ordersystem.application.user.dto.SignUpCommand;
-import com.hanyoonsoo.ordersystem.application.user.dto.UserInfoDto;
+import com.hanyoonsoo.ordersystem.application.user.dto.UserDetailResult;
 import com.hanyoonsoo.ordersystem.application.user.model.EmailPasswordCredential;
 import com.hanyoonsoo.ordersystem.application.common.transaction.ReadOnlyTransactional;
 import com.hanyoonsoo.ordersystem.application.user.port.in.UserServicePort;
@@ -47,11 +47,11 @@ public class UserService implements UserServicePort {
 
     @Override
     @ReadOnlyTransactional
-    public UserInfoDto getMyInfo(UUID userId) {
+    public UserDetailResult getMyInfo(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND));
 
-        return new UserInfoDto(
+        return new UserDetailResult(
                 user.getId(),
                 user.getName(),
                 userRepository.findRolesByUserId(userId)

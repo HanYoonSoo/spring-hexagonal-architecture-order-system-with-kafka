@@ -4,11 +4,11 @@ import com.hanyoonsoo.ordersystem.core.domain.order.entity.OrderStatus;
 
 import java.util.UUID;
 
-public record OrderRequestResponse(
+public record CreateOrderResponse(
         UUID orderId,
         String status
 ) {
-    public static OrderRequestResponse from(UUID orderId, OrderStatus status) {
-        return new OrderRequestResponse(orderId, status.name());
+    public static CreateOrderResponse from(UUID orderId, OrderStatus status) {
+        return new CreateOrderResponse(orderId, status.name());
     }
 }

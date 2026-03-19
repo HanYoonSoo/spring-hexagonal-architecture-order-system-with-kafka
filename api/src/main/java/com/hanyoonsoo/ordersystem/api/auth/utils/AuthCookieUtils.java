@@ -1,7 +1,7 @@
 package com.hanyoonsoo.ordersystem.api.auth.utils;
 
 import com.hanyoonsoo.ordersystem.api.auth.config.CookieProperties;
-import com.hanyoonsoo.ordersystem.application.auth.dto.TokenDto;
+import com.hanyoonsoo.ordersystem.application.auth.dto.TokenResult;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthServicePort;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
 import com.hanyoonsoo.ordersystem.common.exception.base.UnauthorizedException;
@@ -15,13 +15,13 @@ public final class AuthCookieUtils {
     private AuthCookieUtils() {
     }
 
-    public static ResponseCookie buildRefreshTokenCookie(TokenDto tokenDto, CookieProperties cookieProperties) {
-        return ResponseCookie.from(AuthServicePort.REFRESH_TOKEN_COOKIE_NAME, tokenDto.refreshToken())
+    public static ResponseCookie buildRefreshTokenCookie(TokenResult tokenResult, CookieProperties cookieProperties) {
+        return ResponseCookie.from(AuthServicePort.REFRESH_TOKEN_COOKIE_NAME, tokenResult.refreshToken())
                 .httpOnly(true)
                 .secure(cookieProperties.isSecure())
                 .path("/")
                 .sameSite(cookieProperties.getSameSite())
-                .maxAge(Duration.ofMillis(tokenDto.refreshTokenExpiration().toMillis()))
+                .maxAge(Duration.ofMillis(tokenResult.refreshTokenExpiration().toMillis()))
                 .build();
     }
 

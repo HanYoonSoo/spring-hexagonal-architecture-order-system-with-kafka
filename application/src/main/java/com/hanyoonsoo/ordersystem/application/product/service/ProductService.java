@@ -1,8 +1,8 @@
 package com.hanyoonsoo.ordersystem.application.product.service;
 
 import com.hanyoonsoo.ordersystem.application.common.transaction.ReadOnlyTransactional;
-import com.hanyoonsoo.ordersystem.application.product.dto.ProductCreateCommand;
-import com.hanyoonsoo.ordersystem.application.product.dto.ProductInfoDto;
+import com.hanyoonsoo.ordersystem.application.product.dto.CreateProductCommand;
+import com.hanyoonsoo.ordersystem.application.product.dto.ProductDetailResult;
 import com.hanyoonsoo.ordersystem.application.product.port.in.ProductServicePort;
 import com.hanyoonsoo.ordersystem.application.product.port.out.ProductRepository;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
@@ -19,11 +19,11 @@ public class ProductService implements ProductServicePort {
 
     @Override
     @ReadOnlyTransactional
-    public ProductInfoDto getProductInfo(Long productId) {
+    public ProductDetailResult getProductInfo(Long productId) {
         Product product = productRepository.findProductById(productId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        return new ProductInfoDto(
+        return new ProductDetailResult(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
@@ -33,7 +33,7 @@ public class ProductService implements ProductServicePort {
     }
 
     @Override
-    public void createProduct(ProductCreateCommand command) {
+    public void createProduct(CreateProductCommand command) {
         productRepository.save(command.toEntity());
     }
 }

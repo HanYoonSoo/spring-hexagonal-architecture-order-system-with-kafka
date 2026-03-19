@@ -4,7 +4,7 @@ import com.hanyoonsoo.ordersystem.api.auth.config.CorsAllowedOriginsProperties;
 import com.hanyoonsoo.ordersystem.api.auth.config.CookieProperties;
 import com.hanyoonsoo.ordersystem.api.auth.dto.SignInRequest;
 import com.hanyoonsoo.ordersystem.api.auth.utils.AuthCookieUtils;
-import com.hanyoonsoo.ordersystem.application.auth.dto.TokenDto;
+import com.hanyoonsoo.ordersystem.application.auth.dto.TokenResult;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthServicePort;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
 import com.hanyoonsoo.ordersystem.common.exception.base.UnauthorizedException;
@@ -47,7 +47,7 @@ public class AuthController {
             @Valid @RequestBody SignInRequest request,
             HttpServletResponse response
     ) {
-        TokenDto tokenResponse = authService.signIn(request.toCommand());
+        TokenResult tokenResponse = authService.signIn(request.toCommand());
         setTokenToResponse(response, tokenResponse);
         return ApiResponse.success(null);
     }
@@ -62,7 +62,7 @@ public class AuthController {
     ) {
         throwIfNotAllowedOrigin(request);
         String refreshToken = AuthCookieUtils.extractRefreshToken(request.getCookies());
-        TokenDto tokenResponse = authService.reissue(extractAccessToken(authorization), refreshToken);
+        TokenResult tokenResponse = authService.reissue(extractAccessToken(authorization), refreshToken);
         setTokenToResponse(response, tokenResponse);
         return ApiResponse.success(null);
     }
@@ -74,7 +74,7 @@ public class AuthController {
         return authorization.substring(BEARER_PREFIX.length());
     }
 
-    private void setTokenToResponse(HttpServletResponse response, TokenDto tokenResponse) {
+    private void setTokenToResponse(HttpServletResponse response, TokenResult tokenResponse) {
         response.addHeader(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + tokenResponse.accessToken());
         response.addHeader(HttpHeaders.SET_COOKIE, AuthCookieUtils.buildRefreshTokenCookie(tokenResponse, cookieProperties).toString());
     }

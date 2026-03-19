@@ -1,16 +1,16 @@
 package com.hanyoonsoo.ordersystem.api.product.dto.response;
 
-import com.hanyoonsoo.ordersystem.application.product.dto.ProductInfoDto;
+import com.hanyoonsoo.ordersystem.application.product.dto.ProductDetailResult;
 
-public record ProductInfoResponse(
+public record ProductDetailResponse(
         Long productId,
         String name,
         String description,
         Long price,
         Long stock
 ) {
-    public static ProductInfoResponse from(ProductInfoDto dto) {
-        return new ProductInfoResponse(
+    public static ProductDetailResponse from(ProductDetailResult dto) {
+        return new ProductDetailResponse(
                 dto.id(),
                 dto.name(),
                 dto.description(),

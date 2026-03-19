@@ -2,7 +2,7 @@ package com.hanyoonsoo.ordersystem.api.user.controller;
 
 import com.hanyoonsoo.ordersystem.api.auth.utils.SecurityUtils;
 import com.hanyoonsoo.ordersystem.api.user.dto.request.SignUpRequest;
-import com.hanyoonsoo.ordersystem.api.user.dto.response.UserInfoResponse;
+import com.hanyoonsoo.ordersystem.api.user.dto.response.UserDetailResponse;
 import com.hanyoonsoo.ordersystem.application.user.port.in.UserServicePort;
 import com.hanyoonsoo.ordersystem.common.response.ApiResponse;
 import jakarta.validation.Valid;
@@ -21,8 +21,8 @@ public class UserController {
     private final UserServicePort userService;
 
     @GetMapping("/me")
-    public ApiResponse<UserInfoResponse> me() {
-        UserInfoResponse response = UserInfoResponse.from(
+    public ApiResponse<UserDetailResponse> me() {
+        UserDetailResponse response = UserDetailResponse.from(
                 userService.getMyInfo(SecurityUtils.requiredAuthenticatedUserId())
         );
         return ApiResponse.success(response);

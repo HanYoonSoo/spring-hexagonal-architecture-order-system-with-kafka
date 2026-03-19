@@ -1,17 +1,17 @@
 package com.hanyoonsoo.ordersystem.api.order.dto.request;
 
-import com.hanyoonsoo.ordersystem.application.order.dto.OrderRequestCommand;
+import com.hanyoonsoo.ordersystem.application.order.dto.CreateOrderCommand;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
-public record OrderRequest(
+public record CreateOrderRequest(
         @NotNull Long productId,
         @NotNull @Positive Long quantity
 ) {
 
-    public OrderRequestCommand toCommand(UUID userId) {
-        return new OrderRequestCommand(userId, productId, quantity);
+    public CreateOrderCommand toCommand(UUID userId) {
+        return new CreateOrderCommand(userId, productId, quantity);
     }
 }

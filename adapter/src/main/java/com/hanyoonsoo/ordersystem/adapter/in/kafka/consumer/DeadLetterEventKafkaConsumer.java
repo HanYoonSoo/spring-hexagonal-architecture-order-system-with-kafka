@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DeadLetterKafkaConsumer {
+public class DeadLetterEventKafkaConsumer {
 
     private final OrderServicePort orderService;
     private final EventTopicProvider eventTopicProvider;
@@ -29,7 +29,7 @@ public class DeadLetterKafkaConsumer {
             groupId = "${kafka.dlt.group-id:order-dlt-consumer-v1}",
             containerFactory = "dltKafkaListenerContainerFactory"
     )
-    public void consume(
+    public void handleDeadLetterEvent(
             Map<String, Object> payload,
             Acknowledgment acknowledgment,
             @Header(KafkaHeaders.RECEIVED_TOPIC) String dltTopic,

@@ -1,6 +1,6 @@
 package com.hanyoonsoo.ordersystem.application.order.service;
 
-import com.hanyoonsoo.ordersystem.application.order.dto.OrderRequestCommand;
+import com.hanyoonsoo.ordersystem.application.order.dto.CreateOrderCommand;
 import com.hanyoonsoo.ordersystem.application.order.event.OrderCreatedEvent;
 import com.hanyoonsoo.ordersystem.application.order.event.OrderEventType;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
@@ -36,7 +36,7 @@ public class OrderService implements OrderServicePort {
 
     @Override
     @Transactional
-    public UUID requestOrder(OrderRequestCommand command) {
+    public UUID requestOrder(CreateOrderCommand command) {
         validate(command);
         if (!productRepository.existsById(command.productId())) {
             throw new NotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
@@ -93,7 +93,7 @@ public class OrderService implements OrderServicePort {
         });
     }
 
-    private void validate(OrderRequestCommand command) {
+    private void validate(CreateOrderCommand command) {
         if (command.productId() == null || command.quantity() == null || command.quantity() <= 0L) {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST);
         }

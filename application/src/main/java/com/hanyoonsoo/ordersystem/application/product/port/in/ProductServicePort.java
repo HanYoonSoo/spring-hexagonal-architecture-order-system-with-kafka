@@ -1,11 +1,11 @@
 package com.hanyoonsoo.ordersystem.application.product.port.in;
 
-import com.hanyoonsoo.ordersystem.application.product.dto.ProductCreateCommand;
-import com.hanyoonsoo.ordersystem.application.product.dto.ProductInfoDto;
+import com.hanyoonsoo.ordersystem.application.product.dto.CreateProductCommand;
+import com.hanyoonsoo.ordersystem.application.product.dto.ProductDetailResult;
 
 public interface ProductServicePort {
 
-    ProductInfoDto getProductInfo(Long productId);
+    ProductDetailResult getProductInfo(Long productId);
 
-    void createProduct(ProductCreateCommand command);
+    void createProduct(CreateProductCommand command);
 }

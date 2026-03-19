@@ -1,6 +1,6 @@
 package com.hanyoonsoo.ordersystem.application.product.dto;
 
-public record ProductInfoDto(
+public record ProductDetailResult(
         Long id,
         String name,
         String description,

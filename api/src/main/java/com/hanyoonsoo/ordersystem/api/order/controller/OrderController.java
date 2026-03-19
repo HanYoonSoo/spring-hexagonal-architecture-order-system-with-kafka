@@ -1,8 +1,8 @@
 package com.hanyoonsoo.ordersystem.api.order.controller;
 
 import com.hanyoonsoo.ordersystem.api.auth.utils.SecurityUtils;
-import com.hanyoonsoo.ordersystem.api.order.dto.request.OrderRequest;
-import com.hanyoonsoo.ordersystem.api.order.dto.response.OrderRequestResponse;
+import com.hanyoonsoo.ordersystem.api.order.dto.request.CreateOrderRequest;
+import com.hanyoonsoo.ordersystem.api.order.dto.response.CreateOrderResponse;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
 import com.hanyoonsoo.ordersystem.common.response.ApiResponse;
 import com.hanyoonsoo.ordersystem.core.domain.order.entity.OrderStatus;
@@ -23,8 +23,8 @@ public class OrderController {
     private final OrderServicePort orderService;
 
     @PostMapping
-    public ApiResponse<OrderRequestResponse> requestOrder(@Valid @RequestBody OrderRequest request) {
+    public ApiResponse<CreateOrderResponse> requestOrder(@Valid @RequestBody CreateOrderRequest request) {
         UUID orderId = orderService.requestOrder(request.toCommand(SecurityUtils.requiredAuthenticatedUserId()));
-        return ApiResponse.success(OrderRequestResponse.from(orderId, OrderStatus.PENDING));
+        return ApiResponse.success(CreateOrderResponse.from(orderId, OrderStatus.PENDING));
     }
 }

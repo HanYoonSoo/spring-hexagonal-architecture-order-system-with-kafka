@@ -2,7 +2,7 @@ package com.hanyoonsoo.ordersystem.application.auth.service;
 
 import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
 import com.hanyoonsoo.ordersystem.application.auth.dto.SignInCommand;
-import com.hanyoonsoo.ordersystem.application.auth.dto.TokenDto;
+import com.hanyoonsoo.ordersystem.application.auth.dto.TokenResult;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthTokenServicePort;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthServicePort;
 import com.hanyoonsoo.ordersystem.application.auth.port.out.JwtTokenPort;
@@ -32,7 +32,7 @@ public class AuthService implements AuthServicePort {
 
     @Override
     @ReadOnlyTransactional
-    public TokenDto signIn(SignInCommand command) {
+    public TokenResult signIn(SignInCommand command) {
         EmailPasswordCredential credential = EmailPasswordCredential.from(command.credential());
         UserCredential userCredential = userRepository.findUserCredentialByLoginIdAndProvider(
                         credential.loginId(),
@@ -49,13 +49,13 @@ public class AuthService implements AuthServicePort {
         }
 
         List<Role> userRoles = userRepository.findRolesByUserId(userCredential.getUser().getId());
-        TokenDto tokenDto = jwtTokenPort.createTokens(userCredential.getUser().getId(), userRoles);
+        TokenResult tokenResult = jwtTokenPort.createTokens(userCredential.getUser().getId(), userRoles);
         authTokenService.saveRefreshToken(
                 userCredential.getUser().getId().toString(),
-                tokenDto.refreshToken(),
-                tokenDto.refreshTokenExpiration().toMillis()
+                tokenResult.refreshToken(),
+                tokenResult.refreshTokenExpiration().toMillis()
         );
-        return tokenDto;
+        return tokenResult;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class AuthService implements AuthServicePort {
 
     @Override
     @Transactional
-    public TokenDto reissue(String accessToken, String refreshToken) {
+    public TokenResult reissue(String accessToken, String refreshToken) {
         JwtUserClaims accessClaims = jwtTokenPort.extractUserClaimsFromAccessTokenAllowExpired(accessToken);
         JwtUserClaims refreshClaims = jwtTokenPort.validateAndExtractUserClaimsFromRefreshToken(refreshToken);
 
@@ -81,7 +81,7 @@ public class AuthService implements AuthServicePort {
             throw new UnauthorizedException(ErrorCode.ROLE_MISMATCH);
         }
 
-        TokenDto reissued = jwtTokenPort.createTokens(refreshClaims.id(), currentRoles);
+        TokenResult reissued = jwtTokenPort.createTokens(refreshClaims.id(), currentRoles);
         authTokenService.saveRefreshToken(
                 refreshClaims.id().toString(),
                 reissued.refreshToken(),
