@@ -1,7 +1,7 @@
 package com.hanyoonsoo.ordersystem.adapter.out.security.jwt;
 
 import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
-import com.hanyoonsoo.ordersystem.application.auth.dto.TokenDto;
+import com.hanyoonsoo.ordersystem.application.auth.dto.TokenResult;
 import com.hanyoonsoo.ordersystem.application.auth.port.out.JwtTokenPort;
 import com.hanyoonsoo.ordersystem.core.domain.user.entity.Role;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class JwtTokenProviderAdapter implements JwtTokenPort {
     private final JwtProvider jwtProvider;
 
     @Override
-    public TokenDto createTokens(UUID userId, List<Role> roles) {
+    public TokenResult createTokens(UUID userId, List<Role> roles) {
         return jwtProvider.createTokens(userId, roles);
     }
 

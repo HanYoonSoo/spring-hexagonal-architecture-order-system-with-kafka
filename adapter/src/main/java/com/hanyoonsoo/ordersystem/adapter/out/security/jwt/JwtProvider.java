@@ -2,7 +2,7 @@ package com.hanyoonsoo.ordersystem.adapter.out.security.jwt;
 
 import com.hanyoonsoo.ordersystem.adapter.out.security.config.JwtSecurityProperties;
 import com.hanyoonsoo.ordersystem.application.auth.dto.JwtUserClaims;
-import com.hanyoonsoo.ordersystem.application.auth.dto.TokenDto;
+import com.hanyoonsoo.ordersystem.application.auth.dto.TokenResult;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
 import com.hanyoonsoo.ordersystem.common.exception.base.UnauthorizedException;
 import com.hanyoonsoo.ordersystem.core.domain.user.entity.Role;
@@ -47,12 +47,12 @@ public class JwtProvider {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto createTokens(UUID userId, List<Role> roles) {
+    public TokenResult createTokens(UUID userId, List<Role> roles) {
         long accessTokenExpirationSeconds = jwtSecurityProperties.getAccessTokenExpirationSeconds();
         long refreshTokenExpirationSeconds = jwtSecurityProperties.getRefreshTokenExpirationSeconds();
         String accessToken = createToken(userId, roles, accessTokenExpirationSeconds);
         String refreshToken = createToken(userId, roles, refreshTokenExpirationSeconds);
-        return new TokenDto(accessToken, refreshToken, Duration.ofSeconds(refreshTokenExpirationSeconds));
+        return new TokenResult(accessToken, refreshToken, Duration.ofSeconds(refreshTokenExpirationSeconds));
     }
 
     public JwtUserClaims validateAndExtractUserClaimsFromAccessToken(String token) {
