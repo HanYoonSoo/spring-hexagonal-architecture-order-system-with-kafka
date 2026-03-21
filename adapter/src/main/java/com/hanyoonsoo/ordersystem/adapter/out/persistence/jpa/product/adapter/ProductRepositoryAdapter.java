@@ -6,7 +6,10 @@ import com.hanyoonsoo.ordersystem.core.domain.product.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,6 +25,17 @@ public class ProductRepositoryAdapter implements ProductRepository {
     @Override
     public Optional<Product> findProductById(Long productId) {
         return productJpaRepository.findProductById(productId);
+    }
+
+    @Override
+    public List<Product> findProductsByIds(List<Long> productIds) {
+        Map<Long, Product> productById = productJpaRepository.findAllById(productIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Product::getId, Function.identity()));
+
+        return productIds.stream()
+                .map(productById::get)
+                .filter(java.util.Objects::nonNull)
+                .toList();
     }
 
     @Override
