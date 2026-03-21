@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum CacheType {
-    STOCK("stock");
+    STOCK("stock"),
+    RECENTLY_VIEWED_PRODUCT("recently-viewed-product");
 
     private final String cacheName;
 }
