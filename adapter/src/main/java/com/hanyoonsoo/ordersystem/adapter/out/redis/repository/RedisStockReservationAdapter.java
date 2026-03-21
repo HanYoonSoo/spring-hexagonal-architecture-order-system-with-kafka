@@ -1,4 +1,4 @@
-package com.hanyoonsoo.ordersystem.adapter.out.redis.stock;
+package com.hanyoonsoo.ordersystem.adapter.out.redis.repository;
 
 import com.hanyoonsoo.ordersystem.adapter.config.redis.CacheType;
 import com.hanyoonsoo.ordersystem.adapter.config.redis.RedisCacheProperties;
@@ -6,11 +6,11 @@ import com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.product.repository
 import com.hanyoonsoo.ordersystem.application.order.port.out.StockReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 
-@Component
+@Repository
 @RequiredArgsConstructor
 public class RedisStockReservationAdapter implements StockReservationRepository {
 
