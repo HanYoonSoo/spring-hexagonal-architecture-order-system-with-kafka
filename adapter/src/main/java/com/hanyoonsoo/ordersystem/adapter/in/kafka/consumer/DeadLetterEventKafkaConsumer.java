@@ -2,8 +2,8 @@ package com.hanyoonsoo.ordersystem.adapter.in.kafka.consumer;
 
 import com.hanyoonsoo.ordersystem.adapter.config.kafka.KafkaConsumerErrorHandlerProperties;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
-import com.hanyoonsoo.ordersystem.application.outbox.model.EventTopicKey;
-import com.hanyoonsoo.ordersystem.application.outbox.port.out.EventTopicProvider;
+import com.hanyoonsoo.ordersystem.application.event.outbox.model.EventTopicKey;
+import com.hanyoonsoo.ordersystem.application.event.outbox.port.out.EventTopicProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

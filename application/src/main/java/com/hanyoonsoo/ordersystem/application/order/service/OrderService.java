@@ -5,14 +5,12 @@ import com.hanyoonsoo.ordersystem.application.order.event.OrderCreatedEvent;
 import com.hanyoonsoo.ordersystem.application.order.event.OrderEventType;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
 import com.hanyoonsoo.ordersystem.application.order.port.out.OrderRepository;
-import com.hanyoonsoo.ordersystem.application.order.port.out.StockReservationRepository;
-import com.hanyoonsoo.ordersystem.application.outbox.model.EventTopicKey;
-import com.hanyoonsoo.ordersystem.application.outbox.port.out.EventTopicProvider;
-import com.hanyoonsoo.ordersystem.application.outbox.service.OutboxRelayService;
+import com.hanyoonsoo.ordersystem.application.event.outbox.model.EventTopicKey;
+import com.hanyoonsoo.ordersystem.application.event.outbox.port.in.OutboxRelayServicePort;
+import com.hanyoonsoo.ordersystem.application.event.outbox.port.out.EventTopicProvider;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
 import com.hanyoonsoo.ordersystem.common.exception.base.BadRequestException;
 import com.hanyoonsoo.ordersystem.common.exception.base.NotFoundException;
-import com.hanyoonsoo.ordersystem.common.lock.DistributedLock;
 import com.hanyoonsoo.ordersystem.common.utils.ObjectMapperUtils;
 import com.hanyoonsoo.ordersystem.application.product.port.out.ProductRepository;
 import com.hanyoonsoo.ordersystem.core.domain.order.entity.Order;
@@ -20,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -29,8 +27,7 @@ public class OrderService implements OrderServicePort {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final StockReservationRepository stockReservationRepository;
-    private final OutboxRelayService outboxRelayService;
+    private final OutboxRelayServicePort outboxRelayService;
     private final ObjectMapperUtils objectMapperUtils;
     private final EventTopicProvider eventTopicProvider;
 
@@ -48,7 +45,7 @@ public class OrderService implements OrderServicePort {
         OrderCreatedEvent event = new OrderCreatedEvent(
                 UUID.randomUUID(),
                 OrderEventType.ORDER_CREATED.value(),
-                OffsetDateTime.now(),
+                LocalDateTime.now(),
                 order.getId(),
                 command.userId(),
                 command.productId(),
@@ -63,23 +60,6 @@ public class OrderService implements OrderServicePort {
         );
 
         return order.getId();
-    }
-
-    @Override
-    @DistributedLock(key = "'stock:product:' + #event.productId")
-    public void handleOrderCreatedEvent(OrderCreatedEvent event) {
-        Order order = orderRepository.findById(event.orderId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.ORDER_NOT_FOUND));
-        if (!order.isPending()) {
-            return;
-        }
-
-        boolean reserved = stockReservationRepository.reserve(event.productId(), event.quantity());
-        if (reserved) {
-            order.confirm();
-            return;
-        }
-        order.rejectOutOfStock();
     }
 
     @Override

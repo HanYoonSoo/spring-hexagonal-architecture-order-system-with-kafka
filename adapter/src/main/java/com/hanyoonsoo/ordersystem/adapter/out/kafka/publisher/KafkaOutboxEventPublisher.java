@@ -1,7 +1,7 @@
 package com.hanyoonsoo.ordersystem.adapter.out.kafka.publisher;
 
-import com.hanyoonsoo.ordersystem.application.outbox.exception.OutboxPublishException;
-import com.hanyoonsoo.ordersystem.application.outbox.port.out.OutboxEventPublisher;
+import com.hanyoonsoo.ordersystem.application.event.outbox.exception.OutboxPublishException;
+import com.hanyoonsoo.ordersystem.application.event.outbox.port.out.OutboxEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;

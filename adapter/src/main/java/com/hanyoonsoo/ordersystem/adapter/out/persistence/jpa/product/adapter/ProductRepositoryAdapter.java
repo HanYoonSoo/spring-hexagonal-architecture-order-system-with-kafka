@@ -2,6 +2,7 @@ package com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.product.adapter;
 
 import com.hanyoonsoo.ordersystem.adapter.out.persistence.jpa.product.repository.ProductJpaRepository;
 import com.hanyoonsoo.ordersystem.application.product.port.out.ProductRepository;
+import com.hanyoonsoo.ordersystem.application.product.port.out.ProductStockRepository;
 import com.hanyoonsoo.ordersystem.core.domain.product.entity.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 
 @Repository
 @RequiredArgsConstructor
-public class ProductRepositoryAdapter implements ProductRepository {
+public class ProductRepositoryAdapter implements ProductRepository, ProductStockRepository {
 
     private final ProductJpaRepository productJpaRepository;
 
@@ -40,4 +41,14 @@ public class ProductRepositoryAdapter implements ProductRepository {
 
     @Override
     public void save(Product entity) { productJpaRepository.save(entity); }
+
+    @Override
+    public Optional<Long> findStockByProductId(Long productId) {
+        return productJpaRepository.findProductStockByProductId(productId);
+    }
+
+    @Override
+    public boolean decreaseStock(Long productId, Long quantity) {
+        return productJpaRepository.updateProductStockByProductId(productId, quantity) > 0;
+    }
 }

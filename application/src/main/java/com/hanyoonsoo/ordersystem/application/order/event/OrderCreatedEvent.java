@@ -1,12 +1,12 @@
 package com.hanyoonsoo.ordersystem.application.order.event;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record OrderCreatedEvent(
         UUID eventId,
         String eventType,
-        OffsetDateTime occurredAt,
+        LocalDateTime occurredAt,
         UUID orderId,
         UUID userId,
         Long productId,
