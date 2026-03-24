@@ -24,7 +24,7 @@ public class RedisRecentlyViewedProductRepository implements RecentlyViewedProdu
     public void addRecentlyViewedProduct(UUID userId, Long productId) {
         String key = USER_RECENTLY_VIEWED_PRODUCT_KEY_PREFIX + userId;
 
-        redisTemplate.opsForList().remove(key, 1, String.valueOf(productId));
+        redisTemplate.opsForList().remove(key, 0, String.valueOf(productId));
         redisTemplate.opsForList().leftPush(key, String.valueOf(productId));
         redisTemplate.opsForList().trim(key, 0, 4);
         redisTemplate.expire(key, cacheTtl());
