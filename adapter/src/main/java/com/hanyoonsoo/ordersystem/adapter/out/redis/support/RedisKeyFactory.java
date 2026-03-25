@@ -8,6 +8,7 @@ public final class RedisKeyFactory {
     private static final String INVENTORY_PRODUCT_PREFIX = "inventory:product:";
     private static final String USER_PREFIX = "user:";
     private static final String RECENTLY_VIEWED_PRODUCTS_SUFFIX = "recently-viewed-products";
+    private static final String IDEMPOTENCY_KEY_PREFIX = "idempotency-key:";
 
     private RedisKeyFactory() {
     }
@@ -18,5 +19,9 @@ public final class RedisKeyFactory {
 
     public static String userRecentlyViewedProducts(UUID userId) {
         return USER_PREFIX + userId + DELIMITER + RECENTLY_VIEWED_PRODUCTS_SUFFIX;
+    }
+
+    public static String idempotencyKey(String idempotencyKey) {
+        return IDEMPOTENCY_KEY_PREFIX + idempotencyKey;
     }
 }
