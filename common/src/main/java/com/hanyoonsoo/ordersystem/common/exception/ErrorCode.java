@@ -23,6 +23,7 @@ public enum ErrorCode {
     ORDER_NOT_FOUND(404, "A018", "주문을 찾을 수 없습니다."),
     OUT_OF_STOCK(409, "A019", "재고가 부족합니다."),
     LOCK_ACQUISITION_FAILED(409, "A020", "잠금 획득에 실패했습니다."),
+    DUPLICATE_IDEMPOTENCY_REQUEST(409, "A022", "이미 처리 중이거나 처리된 멱등 요청입니다."),
     FORBIDDEN_USER(403, "A013", "권한이 없는 유저입니다."),
     INTERNAL_SERVER_ERROR(500, "A021", "서버 내부 에러입니다.");
 

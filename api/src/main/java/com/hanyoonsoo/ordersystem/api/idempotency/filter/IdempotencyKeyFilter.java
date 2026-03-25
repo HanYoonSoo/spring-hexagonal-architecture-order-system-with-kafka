@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class IdempotencyKeyFilter extends OncePerRequestFilter {
@@ -59,11 +61,17 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
         boolean saved = idemPotencyServicePort.saveIfAbsentIdempotencyKey(idemPotencyKey, metadata);
 
         if (!saved) {
+            log.warn(
+                    "Duplicate idempotency request blocked. key={}, method={}, path={}",
+                    idemPotencyKey,
+                    metadata.method(),
+                    metadata.path()
+            );
             apiFilterErrorResponseWriter.write(
                     request,
                     response,
-                    ErrorCode.INVALID_REQUEST,
-                    "이미 처리 중이거나 처리된 멱등 요청입니다.",
+                    ErrorCode.DUPLICATE_IDEMPOTENCY_REQUEST,
+                    ErrorCode.DUPLICATE_IDEMPOTENCY_REQUEST.getMessage(),
                     request.getRequestURI()
             );
             return;
