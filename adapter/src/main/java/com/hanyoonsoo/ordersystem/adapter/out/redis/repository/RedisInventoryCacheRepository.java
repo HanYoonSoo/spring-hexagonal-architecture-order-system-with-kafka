@@ -3,6 +3,7 @@ package com.hanyoonsoo.ordersystem.adapter.out.redis.repository;
 import com.hanyoonsoo.ordersystem.adapter.config.redis.CacheType;
 import com.hanyoonsoo.ordersystem.adapter.config.redis.RedisCacheProperties;
 import com.hanyoonsoo.ordersystem.application.product.port.out.InventoryCacheRepository;
+import com.hanyoonsoo.ordersystem.adapter.out.redis.support.RedisKeyFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,8 +14,6 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class RedisInventoryCacheRepository implements InventoryCacheRepository {
-
-    private static final String INVENTORY_KEY_PREFIX = "inventory:product:";
 
     private final RedisTemplate<String, String> redisTemplate;
     private final RedisCacheProperties redisCacheProperties;
@@ -45,7 +44,7 @@ public class RedisInventoryCacheRepository implements InventoryCacheRepository {
     }
 
     private String stockKey(Long productId) {
-        return INVENTORY_KEY_PREFIX + productId;
+        return RedisKeyFactory.inventoryProduct(productId);
     }
 
     private Duration cacheTtl() {

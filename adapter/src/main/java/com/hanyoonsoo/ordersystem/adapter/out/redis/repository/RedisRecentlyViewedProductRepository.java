@@ -2,6 +2,7 @@ package com.hanyoonsoo.ordersystem.adapter.out.redis.repository;
 
 import com.hanyoonsoo.ordersystem.adapter.config.redis.CacheType;
 import com.hanyoonsoo.ordersystem.adapter.config.redis.RedisCacheProperties;
+import com.hanyoonsoo.ordersystem.adapter.out.redis.support.RedisKeyFactory;
 import com.hanyoonsoo.ordersystem.application.product.port.out.RecentlyViewedProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,14 +16,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RedisRecentlyViewedProductRepository implements RecentlyViewedProductRepository {
 
-    private static final String USER_RECENTLY_VIEWED_PRODUCT_KEY_PREFIX = "user:recent-products:";
-
     private final RedisTemplate<String, String> redisTemplate;
     private final RedisCacheProperties redisCacheProperties;
 
     @Override
     public void addRecentlyViewedProduct(UUID userId, Long productId) {
-        String key = USER_RECENTLY_VIEWED_PRODUCT_KEY_PREFIX + userId;
+        String key = RedisKeyFactory.userRecentlyViewedProducts(userId);
 
         redisTemplate.opsForList().remove(key, 0, String.valueOf(productId));
         redisTemplate.opsForList().leftPush(key, String.valueOf(productId));
@@ -32,7 +31,7 @@ public class RedisRecentlyViewedProductRepository implements RecentlyViewedProdu
 
     @Override
     public List<Long> getRecentlyViewedProducts(UUID userId) {
-        String key = USER_RECENTLY_VIEWED_PRODUCT_KEY_PREFIX + userId;
+        String key = RedisKeyFactory.userRecentlyViewedProducts(userId);
         List<String> productIds = redisTemplate.opsForList().range(key, 0, -1);
         
         if (productIds == null) return List.of();
