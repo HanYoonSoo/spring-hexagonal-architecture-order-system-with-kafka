@@ -1,0 +1,50 @@
+spring:
+  docker:
+    compose:
+      enabled: false
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: adapter-integration-test
+      auto-offset-reset: earliest
+
+redis:
+  database: 0
+  cache:
+    default-ttl-seconds: 3600
+    ttl-seconds:
+      stock: 30
+      recently-viewed-product: 60
+
+spring.security.jwt:
+  secret: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+  issuer: order-system-test
+  access-token-expiration-seconds: 3600
+  refresh-token-expiration-seconds: 1209600
+
+outbox:
+  relay:
+    enabled: false
+    batch-size: 50
+    fixed-delay-millis: 500
+    retry-backoff-millis: 5000
+    max-retry-count: 5
+
+kafka:
+  consumer:
+    error-handler:
+      retry-attempts: 3
+      retry-backoff-millis: 1000
+      dlt-suffix: .dlt
+      dlt-partition: 0
+  order-created:
+    topic: order.created.v1
+    group-id: order-created-consumer-v1
+    concurrency: 1
+  dlt:
+    group-id: order-dlt-consumer-v1

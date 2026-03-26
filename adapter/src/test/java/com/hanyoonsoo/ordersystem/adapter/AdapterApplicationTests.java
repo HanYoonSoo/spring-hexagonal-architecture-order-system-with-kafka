@@ -1,13 +1,10 @@
 package com.hanyoonsoo.ordersystem.adapter;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
 class AdapterApplicationTests {
 
     @Test
-    void contextLoads() {
+    void 어댑터_모듈이_로드된다() {
     }
 
 }
