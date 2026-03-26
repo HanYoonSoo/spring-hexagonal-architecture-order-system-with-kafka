@@ -5,7 +5,7 @@ import com.hanyoonsoo.ordersystem.application.auth.dto.SignInCommand;
 import com.hanyoonsoo.ordersystem.application.auth.dto.TokenResult;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthTokenServicePort;
 import com.hanyoonsoo.ordersystem.application.auth.port.in.AuthServicePort;
-import com.hanyoonsoo.ordersystem.application.auth.port.out.JwtTokenPort;
+import com.hanyoonsoo.ordersystem.application.auth.port.out.JwtTokenProvider;
 import com.hanyoonsoo.ordersystem.application.common.transaction.ReadOnlyTransactional;
 import com.hanyoonsoo.ordersystem.application.user.model.EmailPasswordCredential;
 import com.hanyoonsoo.ordersystem.application.user.port.out.UserRepository;
@@ -27,7 +27,7 @@ public class AuthService implements AuthServicePort {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenPort jwtTokenPort;
+    private final JwtTokenProvider jwtTokenProvider;
     private final AuthTokenServicePort authTokenService;
 
     @Override
@@ -49,7 +49,7 @@ public class AuthService implements AuthServicePort {
         }
 
         List<Role> userRoles = userRepository.findRolesByUserId(userCredential.getUser().getId());
-        TokenResult tokenResult = jwtTokenPort.createTokens(userCredential.getUser().getId(), userRoles);
+        TokenResult tokenResult = jwtTokenProvider.createTokens(userCredential.getUser().getId(), userRoles);
         authTokenService.saveRefreshToken(
                 userCredential.getUser().getId().toString(),
                 tokenResult.refreshToken(),
@@ -61,14 +61,14 @@ public class AuthService implements AuthServicePort {
     @Override
     @ReadOnlyTransactional
     public JwtUserClaims validateAndExtractUserClaimsFromAccessToken(String accessToken) {
-        return jwtTokenPort.validateAndExtractUserClaimsFromAccessToken(accessToken);
+        return jwtTokenProvider.validateAndExtractUserClaimsFromAccessToken(accessToken);
     }
 
     @Override
     @Transactional
     public TokenResult reissue(String accessToken, String refreshToken) {
-        JwtUserClaims accessClaims = jwtTokenPort.extractUserClaimsFromAccessTokenAllowExpired(accessToken);
-        JwtUserClaims refreshClaims = jwtTokenPort.validateAndExtractUserClaimsFromRefreshToken(refreshToken);
+        JwtUserClaims accessClaims = jwtTokenProvider.extractUserClaimsFromAccessTokenAllowExpired(accessToken);
+        JwtUserClaims refreshClaims = jwtTokenProvider.validateAndExtractUserClaimsFromRefreshToken(refreshToken);
 
         if (!accessClaims.id().equals(refreshClaims.id())) {
             throw new UnauthorizedException(ErrorCode.INVALID_TOKEN);
@@ -81,7 +81,7 @@ public class AuthService implements AuthServicePort {
             throw new UnauthorizedException(ErrorCode.ROLE_MISMATCH);
         }
 
-        TokenResult reissued = jwtTokenPort.createTokens(refreshClaims.id(), currentRoles);
+        TokenResult reissued = jwtTokenProvider.createTokens(refreshClaims.id(), currentRoles);
         authTokenService.saveRefreshToken(
                 refreshClaims.id().toString(),
                 reissued.refreshToken(),
@@ -94,6 +94,6 @@ public class AuthService implements AuthServicePort {
     @Transactional
     public void logout(String userId, String accessToken) {
         authTokenService.deleteRefreshToken(userId);
-        authTokenService.saveAccessTokenForLogout(accessToken, jwtTokenPort.getAccessTokenExpirationMillis());
+        authTokenService.saveAccessTokenForLogout(accessToken, jwtTokenProvider.getAccessTokenExpirationMillis());
     }
 }

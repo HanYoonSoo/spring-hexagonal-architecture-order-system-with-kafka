@@ -3,7 +3,7 @@ package com.hanyoonsoo.ordersystem.api.idempotency.filter;
 import com.hanyoonsoo.ordersystem.api.auth.config.AllowedPaths;
 import com.hanyoonsoo.ordersystem.api.common.response.ApiFilterErrorResponseWriter;
 import com.hanyoonsoo.ordersystem.application.idempotency.model.IdempotencyKeyMetadata;
-import com.hanyoonsoo.ordersystem.application.idempotency.port.in.IdemPotencyServicePort;
+import com.hanyoonsoo.ordersystem.application.idempotency.port.in.IdempotencyServicePort;
 import com.hanyoonsoo.ordersystem.common.exception.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,7 +27,7 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
 
     private static final String IDEMPOTENCY_KEY_HEADER = "X-Idempotency-Key";
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
-    private final IdemPotencyServicePort idemPotencyServicePort;
+    private final IdempotencyServicePort idempotencyServicePort;
     private final ApiFilterErrorResponseWriter apiFilterErrorResponseWriter;
 
     @Override
@@ -36,9 +36,9 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
             return true;
         }
 
-        String idemPotencyKey = request.getHeader(IDEMPOTENCY_KEY_HEADER);
+        String idempotencyKey = request.getHeader(IDEMPOTENCY_KEY_HEADER);
 
-        if (!StringUtils.hasText(idemPotencyKey)) return true;
+        if (!StringUtils.hasText(idempotencyKey)) return true;
 
         String requestPath = request.getServletPath();
         return Arrays.stream(AllowedPaths.allowedPaths())
@@ -51,19 +51,19 @@ public class IdempotencyKeyFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String idemPotencyKey = request.getHeader(IDEMPOTENCY_KEY_HEADER);
+        String idempotencyKey = request.getHeader(IDEMPOTENCY_KEY_HEADER);
         IdempotencyKeyMetadata metadata = new IdempotencyKeyMetadata(
                 request.getMethod(),
                 request.getRequestURI(),
                 LocalDateTime.now()
         );
 
-        boolean saved = idemPotencyServicePort.saveIfAbsentIdempotencyKey(idemPotencyKey, metadata);
+        boolean saved = idempotencyServicePort.saveIfAbsentIdempotencyKey(idempotencyKey, metadata);
 
         if (!saved) {
             log.warn(
                     "Duplicate idempotency request blocked. key={}, method={}, path={}",
-                    idemPotencyKey,
+                    idempotencyKey,
                     metadata.method(),
                     metadata.path()
             );

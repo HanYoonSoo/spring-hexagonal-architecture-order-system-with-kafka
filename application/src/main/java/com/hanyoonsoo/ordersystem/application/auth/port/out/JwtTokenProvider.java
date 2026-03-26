@@ -7,7 +7,7 @@ import com.hanyoonsoo.ordersystem.core.domain.user.entity.Role;
 import java.util.List;
 import java.util.UUID;
 
-public interface JwtTokenPort {
+public interface JwtTokenProvider {
 
     TokenResult createTokens(UUID userId, List<Role> roles);
 
