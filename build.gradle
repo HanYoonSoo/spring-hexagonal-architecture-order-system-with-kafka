@@ -1,8 +1,27 @@
 plugins {
     id 'java'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.5.11' apply false
     id 'io.spring.dependency-management' version '1.1.7' apply false
 }
+
+repositories {
+    mavenCentral()
+}
+
+jacoco {
+    toolVersion = '0.8.12'
+}
+
+ext.coverageExclusions = [
+        '**/*Application.class',
+        '**/config/**',
+        '**/dto/**',
+        '**/port/**',
+        '**/*Properties.class',
+        '**/*JpaRepository.class',
+        '**/common/transaction/**'
+]
 
 subprojects {
 
@@ -11,6 +30,7 @@ subprojects {
     description = 'order-system'
 
     apply plugin: 'java'
+    apply plugin: 'jacoco'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
@@ -44,12 +64,78 @@ subprojects {
         useJUnitPlatform {
             excludeTags 'integration'
         }
+        finalizedBy tasks.named('jacocoTestReport')
     }
 
     tasks.register('integrationTest', Test) {
+        description = 'Runs integration tests.'
+        group = 'verification'
+        testClassesDirs = sourceSets.test.output.classesDirs
+        classpath = sourceSets.test.runtimeClasspath
+        shouldRunAfter tasks.named('test')
         useJUnitPlatform {
             includeTags "integration"
         }
     }
 
+    jacoco {
+        toolVersion = '0.8.12'
+    }
+
+    tasks.named('jacocoTestReport', JacocoReport) {
+        dependsOn tasks.named('test')
+        reports {
+            xml.required = true
+            html.required = true
+        }
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: rootProject.ext.coverageExclusions)
+        }))
+    }
+}
+
+tasks.register('jacocoRootReport', JacocoReport) {
+    dependsOn tasks.named('test')
+    dependsOn subprojects.collect { it.tasks.named('test') }
+    dependsOn subprojects.collect { it.tasks.named('integrationTest') }
+    dependsOn subprojects.collect { it.tasks.named('jacocoTestReport') }
+
+    executionData.from(fileTree(rootDir).include(
+            '**/build/jacoco/test.exec',
+            '**/build/jacoco/integrationTest.exec'
+    ))
+
+    additionalSourceDirs.from(files(subprojects.collect { it.sourceSets.main.allSource.srcDirs }))
+    sourceDirectories.from(files(subprojects.collect { it.sourceSets.main.allSource.srcDirs }))
+    classDirectories.from(files(subprojects.collect { it.sourceSets.main.output }).asFileTree.matching {
+        exclude rootProject.ext.coverageExclusions
+    })
+
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.register('jacocoRootCoverageVerification', JacocoCoverageVerification) {
+    dependsOn tasks.named('jacocoRootReport')
+
+    executionData.from(tasks.named('jacocoRootReport').map { it.executionData })
+    additionalSourceDirs.from(files(subprojects.collect { it.sourceSets.main.allSource.srcDirs }))
+    sourceDirectories.from(files(subprojects.collect { it.sourceSets.main.allSource.srcDirs }))
+    classDirectories.from(files(subprojects.collect { it.sourceSets.main.output }).asFileTree.matching {
+        exclude rootProject.ext.coverageExclusions
+    })
+
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.80
+            }
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('jacocoRootCoverageVerification')
 }
