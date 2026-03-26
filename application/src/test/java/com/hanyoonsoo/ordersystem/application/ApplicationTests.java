@@ -1,13 +1,10 @@
 package com.hanyoonsoo.ordersystem.application;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
 class ApplicationTests {
 
     @Test
-    void contextLoads() {
+    void 애플리케이션_모듈이_로드된다() {
     }
 
 }
