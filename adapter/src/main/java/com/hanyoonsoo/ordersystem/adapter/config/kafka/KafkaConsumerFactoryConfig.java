@@ -1,6 +1,8 @@
 package com.hanyoonsoo.ordersystem.adapter.config.kafka;
 
+import com.hanyoonsoo.ordersystem.application.email.event.EmailSendRequestedEvent;
 import com.hanyoonsoo.ordersystem.application.order.event.OrderCreatedEvent;
+import com.hanyoonsoo.ordersystem.application.order.event.OrderResultEvent;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -26,6 +28,20 @@ public class KafkaConsumerFactoryConfig {
     public ConsumerFactory<String, OrderCreatedEvent> orderCreatedConsumerFactory(KafkaProperties kafkaProperties) {
         Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
         JsonDeserializer<OrderCreatedEvent> valueDeserializer = new JsonDeserializer<>(OrderCreatedEvent.class);
+        return new DefaultKafkaConsumerFactory<>(properties, new StringDeserializer(), valueDeserializer);
+    }
+
+    @Bean
+    public ConsumerFactory<String, OrderResultEvent> orderResultConsumerFactory(KafkaProperties kafkaProperties) {
+        Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
+        JsonDeserializer<OrderResultEvent> valueDeserializer = new JsonDeserializer<>(OrderResultEvent.class);
+        return new DefaultKafkaConsumerFactory<>(properties, new StringDeserializer(), valueDeserializer);
+    }
+
+    @Bean
+    public ConsumerFactory<String, EmailSendRequestedEvent> emailSendRequestedConsumerFactory(KafkaProperties kafkaProperties) {
+        Map<String, Object> properties = kafkaProperties.buildConsumerProperties();
+        JsonDeserializer<EmailSendRequestedEvent> valueDeserializer = new JsonDeserializer<>(EmailSendRequestedEvent.class);
         return new DefaultKafkaConsumerFactory<>(properties, new StringDeserializer(), valueDeserializer);
     }
 
@@ -75,6 +91,32 @@ public class KafkaConsumerFactoryConfig {
         ConcurrentKafkaListenerContainerFactory<String, OrderCreatedEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(orderCreatedConsumerFactory);
+        factory.setCommonErrorHandler(kafkaDefaultErrorHandler);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return factory;
+    }
+
+    @Bean(name = "orderResultKafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, OrderResultEvent> orderResultKafkaListenerContainerFactory(
+            ConsumerFactory<String, OrderResultEvent> orderResultConsumerFactory,
+            DefaultErrorHandler kafkaDefaultErrorHandler
+    ) {
+        ConcurrentKafkaListenerContainerFactory<String, OrderResultEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(orderResultConsumerFactory);
+        factory.setCommonErrorHandler(kafkaDefaultErrorHandler);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return factory;
+    }
+
+    @Bean(name = "emailSendRequestedKafkaListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, EmailSendRequestedEvent> emailSendRequestedKafkaListenerContainerFactory(
+            ConsumerFactory<String, EmailSendRequestedEvent> emailSendRequestedConsumerFactory,
+            DefaultErrorHandler kafkaDefaultErrorHandler
+    ) {
+        ConcurrentKafkaListenerContainerFactory<String, EmailSendRequestedEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(emailSendRequestedConsumerFactory);
         factory.setCommonErrorHandler(kafkaDefaultErrorHandler);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         return factory;

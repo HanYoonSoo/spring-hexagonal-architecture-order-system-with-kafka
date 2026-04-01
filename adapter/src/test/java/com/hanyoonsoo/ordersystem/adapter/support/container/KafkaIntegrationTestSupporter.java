@@ -1,5 +1,7 @@
 package com.hanyoonsoo.ordersystem.adapter.support.container;
 
+import com.hanyoonsoo.ordersystem.application.email.port.in.EmailServicePort;
+import com.hanyoonsoo.ordersystem.application.notification.port.in.NotificationServicePort;
 import com.hanyoonsoo.ordersystem.application.order.port.in.InventoryServicePort;
 import com.hanyoonsoo.ordersystem.application.order.port.in.OrderServicePort;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -26,6 +28,8 @@ public abstract class KafkaIntegrationTestSupporter extends AbstractIntegrationC
 
     private static final String KAFKA_IMAGE = "apache/kafka:3.9.1";
     private static final String ORDER_CREATED_TOPIC = "order.created.v1";
+    private static final String ORDER_RESULT_TOPIC = "order.result.v1";
+    private static final String EMAIL_SEND_REQUESTED_TOPIC = "email.send.requested.v1";
     private static final String ORDER_CREATED_DLT_TOPIC = "order.created.v1.dlt";
 
     static final KafkaContainer KAFKA_CONTAINER = createKafkaContainer(KAFKA_IMAGE);
@@ -33,6 +37,8 @@ public abstract class KafkaIntegrationTestSupporter extends AbstractIntegrationC
     static {
         createTopics(KAFKA_CONTAINER, List.of(
                 new NewTopic(ORDER_CREATED_TOPIC, 1, (short) 1),
+                new NewTopic(ORDER_RESULT_TOPIC, 1, (short) 1),
+                new NewTopic(EMAIL_SEND_REQUESTED_TOPIC, 1, (short) 1),
                 new NewTopic(ORDER_CREATED_DLT_TOPIC, 1, (short) 1)
         ));
     }
@@ -43,12 +49,18 @@ public abstract class KafkaIntegrationTestSupporter extends AbstractIntegrationC
     @MockitoBean
     protected OrderServicePort orderService;
 
+    @MockitoBean
+    protected NotificationServicePort notificationService;
+
+    @MockitoBean
+    protected EmailServicePort emailService;
+
     @Autowired
     protected KafkaTemplate<String, Object> kafkaObjectTemplate;
 
     @AfterEach
     void resetMocks() {
-        Mockito.reset(inventoryService, orderService);
+        Mockito.reset(inventoryService, orderService, notificationService, emailService);
     }
 
     @DynamicPropertySource

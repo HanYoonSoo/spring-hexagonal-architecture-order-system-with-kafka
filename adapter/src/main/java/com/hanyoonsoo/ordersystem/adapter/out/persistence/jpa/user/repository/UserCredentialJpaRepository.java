@@ -5,10 +5,13 @@ import com.hanyoonsoo.ordersystem.core.domain.user.entity.UserCredential;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserCredentialJpaRepository extends JpaRepository<UserCredential, Long> {
 
     boolean existsUserCredentialByLoginIdAndDeletedAtIsNull(String loginId);
 
     Optional<UserCredential> findUserCredentialByLoginIdAndProviderAndDeletedAtIsNull(String loginId, CredentialProvider provider);
+
+    Optional<UserCredential> findUserCredentialByUserIdAndDeletedAtIsNull(UUID userId);
 }

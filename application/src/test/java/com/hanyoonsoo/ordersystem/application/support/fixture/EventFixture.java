@@ -1,6 +1,8 @@
 package com.hanyoonsoo.ordersystem.application.support.fixture;
 
 import com.hanyoonsoo.ordersystem.application.order.event.OrderCreatedEvent;
+import com.hanyoonsoo.ordersystem.application.order.event.OrderResultEvent;
+import com.hanyoonsoo.ordersystem.core.domain.order.entity.OrderStatus;
 import com.hanyoonsoo.ordersystem.core.domain.event.outbox.entity.OutboxEvent;
 
 import java.time.LocalDateTime;
@@ -31,6 +33,19 @@ public final class EventFixture {
                 "{\"orderId\":\"1\"}",
                 LocalDateTime.of(2026, 3, 26, 12, 0),
                 LocalDateTime.of(2026, 3, 26, 12, 0)
+        );
+    }
+
+    public static OrderResultEvent 주문결과이벤트() {
+        return new OrderResultEvent(
+                UUID.randomUUID(),
+                "order.result",
+                LocalDateTime.of(2026, 3, 26, 12, 10),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                1L,
+                2L,
+                OrderStatus.CONFIRMED
         );
     }
 }

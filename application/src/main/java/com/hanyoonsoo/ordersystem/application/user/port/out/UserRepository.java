@@ -22,6 +22,8 @@ public interface UserRepository {
 
     Optional<User> findById(UUID userId);
 
+    Optional<UserCredential> findUserCredentialByUserIdAndDeletedAtIsNull(UUID userId);
+
     Optional<UserCredential> findUserCredentialByLoginIdAndProvider(String loginId, CredentialProvider credentialProvider);
 
     List<Role> findRolesByUserId(UUID userId);

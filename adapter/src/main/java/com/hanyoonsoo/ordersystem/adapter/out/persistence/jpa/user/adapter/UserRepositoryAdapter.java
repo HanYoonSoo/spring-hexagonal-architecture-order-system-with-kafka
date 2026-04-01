@@ -50,6 +50,11 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
+    public Optional<UserCredential> findUserCredentialByUserIdAndDeletedAtIsNull(UUID userId) {
+        return userCredentialJpaRepository.findUserCredentialByUserIdAndDeletedAtIsNull(userId);
+    }
+
+    @Override
     public Optional<UserCredential> findUserCredentialByLoginIdAndProvider(String loginId, CredentialProvider credentialProvider) {
         return userCredentialJpaRepository.findUserCredentialByLoginIdAndProviderAndDeletedAtIsNull(loginId, credentialProvider);
     }

@@ -1,6 +1,9 @@
 package com.hanyoonsoo.ordersystem.application.order.service;
 
 import com.hanyoonsoo.ordersystem.application.event.idempotency.port.out.ProcessedEventRepository;
+import com.hanyoonsoo.ordersystem.application.event.outbox.model.EventTopicKey;
+import com.hanyoonsoo.ordersystem.application.event.outbox.port.in.OutboxRelayServicePort;
+import com.hanyoonsoo.ordersystem.application.event.outbox.port.out.EventTopicProvider;
 import com.hanyoonsoo.ordersystem.application.order.event.OrderCreatedEvent;
 import com.hanyoonsoo.ordersystem.application.order.port.out.OrderRepository;
 import com.hanyoonsoo.ordersystem.application.product.port.out.InventoryCacheRepository;
@@ -8,6 +11,7 @@ import com.hanyoonsoo.ordersystem.application.product.port.out.ProductStockRepos
 import com.hanyoonsoo.ordersystem.application.support.fixture.EventFixture;
 import com.hanyoonsoo.ordersystem.application.support.fixture.OrderFixture;
 import com.hanyoonsoo.ordersystem.common.exception.base.NotFoundException;
+import com.hanyoonsoo.ordersystem.common.utils.ObjectMapperUtils;
 import com.hanyoonsoo.ordersystem.core.domain.order.entity.Order;
 import com.hanyoonsoo.ordersystem.core.domain.order.entity.OrderStatus;
 import org.junit.jupiter.api.Test;
@@ -21,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.BDDMockito.then;
@@ -37,6 +42,12 @@ class InventoryServiceTest {
     private InventoryCacheRepository inventoryCacheRepository;
     @Mock
     private ProductStockRepository productStockRepository;
+    @Mock
+    private OutboxRelayServicePort outboxRelayService;
+    @Mock
+    private EventTopicProvider eventTopicProvider;
+    @Mock
+    private ObjectMapperUtils objectMapperUtils;
     @InjectMocks
     private InventoryService inventoryService;
 
@@ -90,12 +101,21 @@ class InventoryServiceTest {
         given(orderRepository.findById(event.orderId())).willReturn(Optional.of(order));
         given(inventoryCacheRepository.findStockByProductId(event.productId())).willReturn(Optional.empty());
         given(productStockRepository.findStockByProductId(event.productId())).willReturn(Optional.empty());
+        given(eventTopicProvider.topicOf(EventTopicKey.ORDER_RESULT)).willReturn("order.result.v1");
+        given(objectMapperUtils.writeValueAsString(any())).willReturn("payload-json");
 
         // when
         inventoryService.handleOrderCreated(event, "inventory-order-created-v1");
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.REJECTED_OUT_OF_STOCK);
+        then(outboxRelayService).should().append(
+                eq("order.result.v1"),
+                eq("order.result"),
+                eq(order.getId().toString()),
+                eq("payload-json"),
+                any()
+        );
     }
 
     @Test
@@ -106,12 +126,21 @@ class InventoryServiceTest {
         given(processedEventRepository.saveIfAbsent(anyString(), any(), anyString(), any())).willReturn(true);
         given(orderRepository.findById(event.orderId())).willReturn(Optional.of(order));
         given(inventoryCacheRepository.findStockByProductId(event.productId())).willReturn(Optional.of(1L));
+        given(eventTopicProvider.topicOf(EventTopicKey.ORDER_RESULT)).willReturn("order.result.v1");
+        given(objectMapperUtils.writeValueAsString(any())).willReturn("payload-json");
 
         // when
         inventoryService.handleOrderCreated(event, "inventory-order-created-v1");
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.REJECTED_OUT_OF_STOCK);
+        then(outboxRelayService).should().append(
+                eq("order.result.v1"),
+                eq("order.result"),
+                eq(order.getId().toString()),
+                eq("payload-json"),
+                any()
+        );
     }
 
     @Test
@@ -123,12 +152,21 @@ class InventoryServiceTest {
         given(orderRepository.findById(event.orderId())).willReturn(Optional.of(order));
         given(inventoryCacheRepository.findStockByProductId(event.productId())).willReturn(Optional.of(10L));
         given(productStockRepository.decreaseStock(event.productId(), event.quantity())).willReturn(false);
+        given(eventTopicProvider.topicOf(EventTopicKey.ORDER_RESULT)).willReturn("order.result.v1");
+        given(objectMapperUtils.writeValueAsString(any())).willReturn("payload-json");
 
         // when
         inventoryService.handleOrderCreated(event, "inventory-order-created-v1");
 
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.REJECTED_OUT_OF_STOCK);
+        then(outboxRelayService).should().append(
+                eq("order.result.v1"),
+                eq("order.result"),
+                eq(order.getId().toString()),
+                eq("payload-json"),
+                any()
+        );
     }
 
     @Test
@@ -140,6 +178,8 @@ class InventoryServiceTest {
         given(orderRepository.findById(event.orderId())).willReturn(Optional.of(order));
         given(inventoryCacheRepository.findStockByProductId(event.productId())).willReturn(Optional.of(2L));
         given(productStockRepository.decreaseStock(event.productId(), event.quantity())).willReturn(true);
+        given(eventTopicProvider.topicOf(EventTopicKey.ORDER_RESULT)).willReturn("order.result.v1");
+        given(objectMapperUtils.writeValueAsString(any())).willReturn("payload-json");
 
         // when
         inventoryService.handleOrderCreated(event, "inventory-order-created-v1");
@@ -147,6 +187,13 @@ class InventoryServiceTest {
         // then
         then(inventoryCacheRepository).should().removeStock(event.productId());
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
+        then(outboxRelayService).should().append(
+                eq("order.result.v1"),
+                eq("order.result"),
+                eq(order.getId().toString()),
+                eq("payload-json"),
+                any()
+        );
     }
 
     @Test
@@ -158,6 +205,8 @@ class InventoryServiceTest {
         given(orderRepository.findById(event.orderId())).willReturn(Optional.of(order));
         given(inventoryCacheRepository.findStockByProductId(event.productId())).willReturn(Optional.of(10L));
         given(productStockRepository.decreaseStock(event.productId(), event.quantity())).willReturn(true);
+        given(eventTopicProvider.topicOf(EventTopicKey.ORDER_RESULT)).willReturn("order.result.v1");
+        given(objectMapperUtils.writeValueAsString(any())).willReturn("payload-json");
 
         // when
         inventoryService.handleOrderCreated(event, "inventory-order-created-v1");
@@ -165,5 +214,12 @@ class InventoryServiceTest {
         // then
         then(inventoryCacheRepository).should().saveStock(event.productId(), 8L);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
+        then(outboxRelayService).should().append(
+                eq("order.result.v1"),
+                eq("order.result"),
+                eq(order.getId().toString()),
+                eq("payload-json"),
+                any()
+        );
     }
 }
