@@ -26,7 +26,7 @@ public class DeadLetterEventKafkaConsumer {
 
     @KafkaListener(
             topicPattern = ".*\\.dlt",
-            groupId = "${kafka.dlt.group-id:order-dlt-consumer-v1}",
+            groupId = "${app.kafka.consumers.dlt.group-id:order-dlt-consumer-v1}",
             containerFactory = "dltKafkaListenerContainerFactory"
     )
     public void handleDeadLetterEvent(

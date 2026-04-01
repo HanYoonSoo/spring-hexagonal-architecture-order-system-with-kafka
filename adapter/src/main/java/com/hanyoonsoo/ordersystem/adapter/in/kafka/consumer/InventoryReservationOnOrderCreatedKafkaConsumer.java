@@ -18,9 +18,9 @@ public class InventoryReservationOnOrderCreatedKafkaConsumer {
     private final InventoryServicePort inventoryService;
 
     @KafkaListener(
-            topics = "${kafka.order-created.topic}",
-            groupId = "${kafka.order-created.group-id}",
-            concurrency = "${kafka.order-created.concurrency}",
+            topics = "${app.kafka.topics.order-created}",
+            groupId = "${app.kafka.consumers.order-created.group-id}",
+            concurrency = "${app.kafka.consumers.order-created.concurrency}",
             containerFactory = "orderCreatedKafkaListenerContainerFactory"
     )
     public void handleInventoryReservationOnOrderCreated(

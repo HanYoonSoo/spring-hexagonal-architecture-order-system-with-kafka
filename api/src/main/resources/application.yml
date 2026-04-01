@@ -20,6 +20,21 @@ spring:
       access-token-expiration-seconds: 3600
       refresh-token-expiration-seconds: 1209600
       secret: ${ORDER_SYSTEM_JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+      auth-code-expiration-millis: 1800000
   kafka:
     producer:
       acks: all
@@ -37,17 +52,29 @@ cors:
   allowed:
     origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 
-kafka:
-  consumer:
+app:
+  kafka:
+    topics:
+      order-created: ${KAFKA_TOPIC_ORDER_CREATED:order.created.v1}
+      order-result: ${KAFKA_TOPIC_ORDER_RESULT:order.result.v1}
+      email-send-requested: ${KAFKA_TOPIC_EMAIL_SEND_REQUESTED:email.send.requested.v1}
+    consumers:
+      order-created:
+        group-id: ${KAFKA_GROUP_ID_ORDER_CREATED:order-created-consumer-v1}
+        concurrency: ${KAFKA_CONCURRENCY_ORDER_CREATED:1}
+      notification-order-result:
+        group-id: ${KAFKA_GROUP_ID_NOTIFICATION_ORDER_RESULT:notification-order-result-consumer-v1}
+        concurrency: ${KAFKA_CONCURRENCY_NOTIFICATION_ORDER_RESULT:1}
+      email-send-requested:
+        group-id: ${KAFKA_GROUP_ID_EMAIL_SEND_REQUESTED:email-send-requested-consumer-v1}
+        concurrency: ${KAFKA_CONCURRENCY_EMAIL_SEND_REQUESTED:1}
+      dlt:
+        group-id: ${KAFKA_GROUP_ID_DLT:order-dlt-consumer-v1}
     error-handler:
       retry-attempts: ${KAFKA_CONSUMER_RETRY_ATTEMPTS:3}
       retry-backoff-millis: ${KAFKA_CONSUMER_RETRY_BACKOFF_MILLIS:1000}
       dlt-suffix: ${KAFKA_DLT_SUFFIX:.dlt}
       dlt-partition: ${KAFKA_DLT_PARTITION:0}
-  order-created:
-    topic: ${KAFKA_TOPIC_ORDER_CREATED:order.created.v1}
-    group-id: ${KAFKA_GROUP_ID_ORDER_CREATED:order-created-consumer-v1}
-    concurrency: ${KAFKA_CONCURRENCY_ORDER_CREATED:1}
 
 outbox:
   relay:

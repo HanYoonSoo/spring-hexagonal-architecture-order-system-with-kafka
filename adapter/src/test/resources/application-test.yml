@@ -35,16 +35,26 @@ outbox:
     retry-backoff-millis: 5000
     max-retry-count: 5
 
-kafka:
-  consumer:
+app:
+  kafka:
+    topics:
+      order-created: order.created.v1
+      order-result: order.result.v1
+      email-send-requested: email.send.requested.v1
+    consumers:
+      order-created:
+        group-id: order-created-consumer-v1
+        concurrency: 1
+      notification-order-result:
+        group-id: notification-order-result-consumer-v1
+        concurrency: 1
+      email-send-requested:
+        group-id: email-send-requested-consumer-v1
+        concurrency: 1
+      dlt:
+        group-id: order-dlt-consumer-v1
     error-handler:
       retry-attempts: 3
       retry-backoff-millis: 1000
       dlt-suffix: .dlt
       dlt-partition: 0
-  order-created:
-    topic: order.created.v1
-    group-id: order-created-consumer-v1
-    concurrency: 1
-  dlt:
-    group-id: order-dlt-consumer-v1

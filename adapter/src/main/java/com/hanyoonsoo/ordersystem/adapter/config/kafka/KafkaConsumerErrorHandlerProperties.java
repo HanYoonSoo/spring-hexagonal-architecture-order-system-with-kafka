@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 @Component
-@ConfigurationProperties(prefix = "kafka.consumer.error-handler")
+@ConfigurationProperties(prefix = "app.kafka.error-handler")
 public class KafkaConsumerErrorHandlerProperties {
 
     private long retryAttempts = 3;

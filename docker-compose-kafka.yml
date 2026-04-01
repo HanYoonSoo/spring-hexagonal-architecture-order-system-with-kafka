@@ -54,10 +54,10 @@ services:
         BOOTSTRAP=kafka:9092
 
         kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic order.created.v1 --partitions 3 --replication-factor 1
-        kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic notification.sent.v1 --partitions 1 --replication-factor 1
-        kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic notification.failed.v1 --partitions 1 --replication-factor 1
+        kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic order.result.v1 --partitions 1 --replication-factor 1
+        kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic email.send.requested.v1 --partitions 1 --replication-factor 1
 
-        for t in order.created.v1 notification.sent.v1 notification.failed.v1; do
+        for t in order.created.v1 order.result.v1 email.send.requested.v1; do
           kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic $$t.retry --partitions 1 --replication-factor 1
           kafka-topics --bootstrap-server $$BOOTSTRAP --create --if-not-exists --topic $$t.dlt --partitions 1 --replication-factor 1
         done
